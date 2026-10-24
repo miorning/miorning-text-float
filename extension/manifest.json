@@ -1,0 +1,73 @@
+{
+  "manifest_version": 3,
+  "name": "喵咛文本窗 · MIORNING",
+  "version": "0.2.0",
+  "description": "放大文本框，拖动缩放、保留版本与图片引用；支持自行添加网站。Enter 换行，Ctrl+Enter 确认。",
+  "minimum_chrome_version": "120",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "unlimitedStorage"
+  ],
+  "action": {
+    "default_title": "开启 / 暂停喵咛文本窗",
+    "default_icon": {
+      "16": "icons/16.png",
+      "128": "icons/128.png",
+      "32": "icons/32.png",
+      "48": "icons/48.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.liblib.tv/*",
+        "https://liblib.tv/*"
+      ],
+      "js": [
+        "store.js",
+        "shell.js",
+        "references.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Alt+Shift+E"
+      },
+      "description": "开启或暂停浮动文本编辑"
+    }
+  },
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "128": "icons/128.png",
+    "32": "icons/32.png",
+    "48": "icons/48.png"
+  },
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "resources": [
+        "icons/48.png"
+      ]
+    }
+  ]
+}

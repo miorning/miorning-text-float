@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>喵咛文本窗 · 三款视频封面</title>
+  <style>
+    :root{--paper:#f5f0e6;--card:#fffdf7;--ink:#272326;--muted:#655d59;--line:#d9cec0;--red:#b74c3d;--soft:#f2ded4}
+    *{box-sizing:border-box}html{scroll-behavior:auto}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.8 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+    main{width:min(1180px,calc(100% - 48px));margin:auto}header{padding:64px 0 36px;border-bottom:2px solid var(--ink)}
+    .brand{margin:0 0 12px;color:var(--red);font-weight:750;letter-spacing:.12em;font-size:13px}h1{font-size:clamp(30px,5vw,52px);line-height:1.2;margin:0 0 20px;letter-spacing:-.035em}
+    .lead{font-size:18px;margin:0 0 10px;max-width:800px}.note{margin:0;color:var(--muted);font-size:14px;max-width:950px}
+    nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}a{color:inherit;text-decoration-thickness:1px;text-underline-offset:4px}a:hover{color:var(--red)}a:focus-visible{outline:3px solid var(--red);outline-offset:5px}
+    nav a{padding:7px 14px;border:1px solid var(--line);border-radius:6px;text-decoration:none;background:var(--card);font-size:14px}
+    section{padding:40px 0;border-bottom:1px solid var(--line);scroll-margin-top:24px}.heading{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:20px}h2{margin:0;font-size:clamp(22px,3vw,30px);line-height:1.4}.badge{background:var(--soft);color:#7e3027;border-radius:4px;font-size:12px;font-weight:700;padding:3px 9px}
+    .pictures{display:grid;grid-template-columns:1.333fr 1fr;gap:20px;align-items:start}figure{margin:0;min-width:0}figure a{display:block}img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#e9dfd0}figcaption{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-top:8px}figcaption a{display:inline}
+    .copy{margin-top:24px;padding:26px 30px;background:var(--card);border-left:4px solid var(--red)}.label{font-size:12px;color:var(--red);font-weight:750;letter-spacing:.08em;margin:0 0 4px}h3{font-size:22px;line-height:1.6;margin:0 0 18px}.description{max-width:900px;margin:0 0 18px}.tags{color:var(--muted);font-size:14px;word-spacing:6px;margin:0}
+    footer{padding:30px 0 48px;font-size:13px;color:var(--muted)}footer p{margin:4px 0}
+    @media(max-width:740px){main{width:calc(100% - 28px)}header{padding:36px 0 28px}.pictures{grid-template-columns:1fr;gap:24px}.copy{padding:20px}.lead{font-size:16px}h3{font-size:19px}section{padding:30px 0}nav{gap:8px}nav a{padding:6px 10px}}
+    @media print{body{background:white}main{width:100%}header{padding-top:0}nav{display:none}section{break-inside:avoid}.copy{border:1px solid #ccc}a{text-decoration:none}}
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="brand">MIORNING · 喵咛文本窗</p>
+    <h1>三款封面，三个切入点。</h1>
+    <p class="lead">推荐用 A「提示词 / 别挤着写」做本次整体插件介绍的主封面。</p>
+    <p class="note">每款均提供横版与 4:3。横版为原生 1672 × 941，接近 16:9；4:3 为 1448 × 1086，比例精确。三款 4:3 均独立构图，未裁切横版。点击图片可查看原图。</p>
+    <p class="note">封面为 AI 生成的宣传插画，并非平台截图。<a href="../docs/images/screenshot.png">查看真实插件界面（本地测试页）</a>。<br>AI-generated promotional illustrations, not platform screenshots. The linked interface uses a local test fixture.</p>
+    <nav aria-label="封面导航"><a href="#cover-a">A · 放大编辑</a><a href="#cover-b">B · 版本回溯</a><a href="#cover-c">C · Tab 引用</a><a href="标题与简介.txt" download>下载全部文案</a></nav>
+  </header>
+  <section id="cover-a" aria-labelledby="title-a">
+    <div class="heading"><h2 id="title-a">A · 提示词 / 别挤着写</h2><span class="badge">推荐主封面</span></div>
+    <div class="pictures">
+      <figure><a href="A_放大编辑_16x9.png"><img src="A_放大编辑_16x9.png" width="1672" height="941" alt="A款横版封面：提示词，别挤着写，突出大文本窗与黑猫形象"></a><figcaption><span>≈ 16:9 · 1672 × 941</span><a href="A_放大编辑_16x9.png" download>保存 PNG</a></figcaption></figure>
+      <figure><a href="A_放大编辑_4x3.png"><img src="A_放大编辑_4x3.png" width="1448" height="1086" alt="A款4比3独立构图封面：提示词，别挤着写"></a><figcaption><span>4:3 · 1448 × 1086</span><a href="A_放大编辑_4x3.png" download>保存 PNG</a></figcaption></figure>
+    </div>
+    <div class="copy"><p class="label">视频标题</p><h3>提示词框太小了，我做了个能拖能放大的「喵咛文本窗」</h3><p class="label">简介</p><p class="description">画布里的提示词一长，就得在小框里来回滚。我自己用着难受，就做了这个「喵咛文本窗」。点开输入框，窗口能拖动、调宽高和字号。回车换行，Ctrl＋Enter 确认后收起，文字留在原来的框里。窗口关掉后也会记住上次设置。插件包附有 GPL 开源代码，黑猫也一起上岗了。</p><p class="tags">#喵咛文本窗 #浏览器插件 #AI视频创作 #提示词 #开源工具</p></div>
+  </section>
+  <section id="cover-b" aria-labelledby="title-b">
+    <div class="heading"><h2 id="title-b">B · 改来改去 / 原稿还在</h2></div>
+    <div class="pictures">
+      <figure><a href="B_版本回溯_16x9.png"><img src="B_版本回溯_16x9.png" width="1672" height="941" loading="lazy" alt="B款横版封面：改来改去，原稿还在，突出版本保存与黑猫形象"></a><figcaption><span>≈ 16:9 · 1672 × 941</span><a href="B_版本回溯_16x9.png" download>保存 PNG</a></figcaption></figure>
+      <figure><a href="B_版本回溯_4x3.png"><img src="B_版本回溯_4x3.png" width="1448" height="1086" loading="lazy" alt="B款4比3独立构图封面：改来改去，原稿还在"></a><figcaption><span>4:3 · 1448 × 1086</span><a href="B_版本回溯_4x3.png" download>保存 PNG</a></figcaption></figure>
+    </div>
+    <div class="copy"><p class="label">视频标题</p><h3>提示词改来改去，原稿终于不用靠复制粘贴留了</h3><p class="label">简介</p><p class="description">改提示词最怕改到最后，发现前面那版更好。这次我给喵咛文本窗加了版本记录：首次打开先存原稿，编辑后确认保存新版本。旧版随时能翻，基于旧版继续改会另存一版，原稿还在。版本都保存在本机，可以删除，也能拖动上方滑块找回来，少一点反复复制粘贴。</p><p class="tags">#喵咛文本窗 #提示词编辑 #版本记录 #AI创作工具 #浏览器插件</p></div>
+  </section>
+  <section id="cover-c" aria-labelledby="title-c">
+    <div class="heading"><h2 id="title-c">C · 打出图名 / Tab 就引用</h2></div>
+    <div class="pictures">
+      <figure><a href="C_Tab引用_16x9.png"><img src="C_Tab引用_16x9.png" width="1672" height="941" loading="lazy" alt="C款横版封面：打出图名，Tab就引用，突出LibTV参考图引用与黑猫形象"></a><figcaption><span>≈ 16:9 · 1672 × 941</span><a href="C_Tab引用_16x9.png" download>保存 PNG</a></figcaption></figure>
+      <figure><a href="C_Tab引用_4x3.png"><img src="C_Tab引用_4x3.png" width="1448" height="1086" loading="lazy" alt="C款4比3独立构图封面：打出图名，Tab就引用"></a><figcaption><span>4:3 · 1448 × 1086</span><a href="C_Tab引用_4x3.png" download>保存 PNG</a></figcaption></figure>
+    </div>
+    <div class="copy"><p class="label">视频标题</p><h3>LibTV 写提示词：打出参考图名，按 Tab 就能引用</h3><p class="label">简介</p><p class="description">连线图片多了，写提示词时来回找引用挺打断思路。我给喵咛文本窗加了图名提示：在 LibTV 里输入完整参考图名称，先显示灰色预览，按 Tab 才真正引用。默认替换图名，勾选后也能保留原文字，原来的 @ 菜单照常用。这个小功能，也是我自己写长提示词时最想省下的一步。</p><p class="tags">#喵咛文本窗 #LibTV #参考图引用 #提示词技巧 #AI视频创作</p></div>
+  </section>
+  <footer><p>文案可以直接选择复制；<a href="标题与简介.txt">打开纯文本文案</a>。</p><p>本页可离线双击打开。图片与文案均从同一文件夹读取，无外部资源。</p></footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>喵咛文本窗 · 本地功能测试</title>
+<style>
+  *{box-sizing:border-box}body{margin:0;background:#e9eeeb;color:#24312d;font:15px/1.6 "Segoe UI","Microsoft YaHei",sans-serif}main{max-width:980px;margin:38px auto;padding:0 24px}h1{font-size:26px;margin-bottom:4px}.intro{margin:0 0 24px;color:#5d6c64}.cards{display:grid;grid-template-columns:1fr 1fr;gap:20px}.card{padding:22px;background:#fff;border:1px solid #cbd5ce;border-radius:12px}h2{font-size:16px;margin:0 0 16px}textarea,[contenteditable=true]{display:block;width:100%;min-height:116px;max-height:150px;overflow:auto;border:1px solid #bac8bd;border-radius:6px;padding:12px;font:14px/1.7 inherit;background:#fafbf9;white-space:pre-wrap;outline-color:#168664}[contenteditable=true]:empty:before{content:attr(data-placeholder);color:#8a968d}label{display:block;margin-bottom:9px;color:#637067}.reference{display:inline-flex;align-items:center;gap:5px;padding:0 5px;border-radius:4px;background:#d5eee2;color:#1d674f;font-size:.9em;white-space:nowrap}.reference img{width:20px;height:20px;border-radius:3px;vertical-align:middle}.fixture-mentions{position:fixed;z-index:10000;width:260px;padding:6px;background:white;border:1px solid #b9cabc;box-shadow:0 8px 24px #283c2626;border-radius:8px}.fixture-mentions[hidden]{display:none}.fixture-mentions button{display:flex;align-items:center;gap:10px;width:100%;padding:7px;border:0;border-radius:5px;background:white;text-align:left;color:#2c3930;font:inherit;cursor:pointer}.fixture-mentions button:hover,.fixture-mentions button.active{background:#e3f2e9}.fixture-mentions img{width:42px;height:42px;border-radius:5px}.refs{display:flex;gap:9px;margin-top:16px}.refs img{width:56px;height:56px;border-radius:6px;border:2px solid #d2ddd6}pre{white-space:pre-wrap;background:#172c23;color:#d8e6dc;padding:18px;border-radius:10px;font-size:12px}small{color:#6b786f}.actions{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0}button{cursor:pointer}.actions button{padding:8px 14px;border:1px solid #a6beb0;border-radius:6px;background:#fafbf8;color:#2b4838}a{color:#167959}.node-stage{margin-top:20px;overflow:hidden;border:1px dashed #a8b9ad;padding:20px;background:#dce6df}.scaled-node{transform:translate(12px,6px) scale(.8);transform-origin:top left;width:420px}.scaled-node textarea{height:90px}body[data-fixture-mode=dark]{background:#18251f;color:#e3eee7}@media(max-width:700px){.cards{grid-template-columns:1fr}main{margin:20px auto}}
+</style>
+<main>
+  <h1>喵咛文本窗 · 本地功能测试</h1>
+  <p class="intro">此页只有本地文本和手工绘制的 SVG 参考图，不连接任何生成服务。</p>
+  <div class="cards">
+    <section class="card"><h2>原生 textarea</h2><label for="fixture-textarea">点击输入框打开文本窗</label><textarea id="fixture-textarea" placeholder="输入多行文字">清晨，镜头缓缓靠近窗边。
+阳光穿过叶片，落在桌上的笔记本。</textarea><small>检查换行、粘贴、撤销与 Ctrl + Enter。此框没有图片引用功能。</small></section>
+    <section class="card"><h2>原生 contenteditable + @ 图片引用</h2><label for="fixture-rich">输入 @，选择下面两张已连接图片</label><div id="fixture-rich" role="textbox" aria-multiline="true" aria-label="参考图提示词" contenteditable="true" data-placeholder="描述画面，输入 @ 引用图片">在窗边放一盆植物。输入 @ 选择参考图。</div><div class="refs" aria-label="已连接的图片参考"></div><small>引用 token 保留 data-reference-id；选中图片后继续编辑。</small></section>
+  </div>
+  <section class="node-stage"><h2>带 transform 与 overflow 的画布节点</h2><div class="scaled-node"><textarea id="fixture-transformed" aria-label="缩放节点提示词">这是缩放为 80% 的模拟画布节点。
+浮窗应跳出裁切区域，保持屏幕上的正常字号。</textarea></div></section>
+  <div class="actions"><button id="reload">保存后刷新</button><button id="replace">重建富文本节点</button><button id="clear">重置测试内容</button></div>
+  <pre id="fixture-state" aria-live="polite"></pre>
+  <p><small>可用 fixtureState() 读取保存值、引用数量及事件计数。生成计数始终为 0。</small></p>
+</main>
+<div class="fixture-mentions" role="listbox" aria-label="已连接图片" hidden></div>
+<script>
+(() => {
+  'use strict';
+  const libtvMode = new URL(location.href).searchParams.has('libtv');
+  const key = 'miorning-text-float-fixture-v1';
+  const svg = value => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(value);
+  const refs = [
+    { id: 'window-light', name: '参考图 1 · 窗边光线', image: svg('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" fill="#f2e8ca"/><path d="M22 18h77v80H22z" fill="#6d9caa"/><path d="M27 23h28v30H27zm34 0h33v30H61zM27 59h28v34H27zm34 0h33v34H61z" fill="#cce7eb"/><path d="m0 120 55-27h40l25 27" fill="#d0af77"/><circle cx="80" cy="36" r="9" fill="#fff4b1"/></svg>') },
+    { id: 'green-plant', name: '参考图 2 · 绿色植物', image: svg('<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><rect width="120" height="120" fill="#dbe7d7"/><path d="m43 79 7 29h23l6-29" fill="#b37455"/><path d="M61 82V31" stroke="#3b7453" stroke-width="5"/><ellipse cx="46" cy="53" rx="21" ry="10" transform="rotate(32 46 53)" fill="#659b62"/><ellipse cx="77" cy="40" rx="22" ry="11" transform="rotate(-34 77 40)" fill="#477f55"/><ellipse cx="75" cy="67" rx="18" ry="9" transform="rotate(-25 75 67)" fill="#7eaa69"/></svg>') }
+  ];
+  const menu = document.querySelector('.fixture-mentions'), stateView = document.querySelector('#fixture-state');
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(key) || '{}'); } catch {}
+  let rich = document.querySelector('#fixture-rich'), activeIndex = 0, atRange = null;
+  if (libtvMode) {
+    const holder = document.createElement('div'); holder.className = 'relative min-w-0 min-h-20';
+    rich.before(holder); holder.append(rich);
+    rich.setAttribute('aria-placeholder','描述你想要生成的画面内容，@引用素材');
+    menu.className = 'libtv-reference-menu'; menu.removeAttribute('role'); menu.setAttribute('data-reference-main-panel','true');
+    const style = document.createElement('style');
+    style.textContent = `.libtv-reference-menu{position:fixed;z-index:10000;width:200px;height:362px;padding:6px;background:#202b27;color:#f1f5f2;border:1px solid #4e6255;box-shadow:0 8px 24px #283c2626;border-radius:8px}.libtv-reference-menu[hidden]{display:none}.libtv-reference-menu button{display:flex;align-items:center;gap:10px;width:100%;padding:7px;border:0;border-radius:5px;background:transparent;text-align:left;color:inherit;font:inherit;cursor:pointer}.libtv-reference-menu button:hover,.libtv-reference-menu button.active{background:#415747}.libtv-reference-menu img{width:42px;height:42px;border-radius:5px}.fixture-native-types{padding:16px 8px;color:#a1b3a5}.mention-badge{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--canvas-controls-border);color:var(--canvas-controls-text);border-radius:4px;white-space:nowrap;font-size:.9em;padding:0 4px}.mention-badge img{width:16px;height:16px;border-radius:3px}#fixture-rich{--canvas-controls-text:#f4f7f5;--canvas-controls-border:#566a5c;background:#1e2822;color:#edf5f0}`;
+    document.head.append(style);
+  }
+  const counts = { input: 0, blur: 0, reference: 0, generation: 0 };
+  const textarea = document.querySelector('#fixture-textarea'), transformed = document.querySelector('#fixture-transformed');
+  if (typeof saved.textarea === 'string') textarea.value = saved.textarea;
+  if (typeof saved.transformed === 'string') transformed.value = saved.transformed;
+  if (typeof saved.rich === 'string') rich.innerHTML = saved.rich;
+  const state = () => { const saved = rich.cloneNode(true); saved.querySelectorAll('[data-mention-suggest]').forEach(el=>el.remove()); return { textarea: textarea.value, transformed: transformed.value, rich: saved.innerHTML, text: saved.textContent, references: [...rich.querySelectorAll('[data-reference-id]')].map(x => x.dataset.referenceId), counts: { ...counts } }; };
+  globalThis.fixtureState = state;
+  function persist() { const value = state(); localStorage.setItem(key, JSON.stringify(value)); stateView.textContent = JSON.stringify(value, null, 2); }
+  const connected = document.querySelector('.refs');
+  connected.innerHTML = refs.map((ref,index) => `<span data-reference-id="${ref.id}" data-reference-name="${ref.name}" title="${ref.name}"><button type="button" data-insert-reference data-index="${index}" aria-label="插入${ref.name}"><img src="${ref.image}" alt="${ref.name}"></button></span>`).join('');
+  const options = refs.map((ref, index) => `<button type="button" ${libtvMode ? '' : 'role="option"'} data-index="${index}" data-reference-id="${ref.id}" data-reference-name="${ref.name}" aria-selected="${index === 0}"><img src="${ref.image}" alt=""><span>${ref.name}</span></button>`).join('');
+  menu.innerHTML = libtvMode ? `<div data-reference-connected-group="true">${options}</div><div class="fixture-native-types">图片 · 视频 · 音频</div>` : options;
+  const closeMenu = () => { menu.hidden = true; atRange = null; rich.removeAttribute('aria-expanded'); };
+  function highlight() { [...menu.querySelectorAll('button')].forEach((button, i) => { button.classList.toggle('active', i === activeIndex); button.setAttribute('aria-selected', String(i === activeIndex)); }); }
+  function inspectAt() {
+    const selection = getSelection();
+    if (!selection?.rangeCount || !selection.isCollapsed) return closeMenu();
+    const range = selection.getRangeAt(0), node = range.startContainer;
+    if (!rich.contains(node) || node.nodeType !== Node.TEXT_NODE) return closeMenu();
+    const text = node.textContent.slice(0, range.startOffset);
+    const match = text.match(/@([^\s@]*)$/);
+    if (!match) return closeMenu();
+    atRange = range.cloneRange();
+    atRange.setStart(node, range.startOffset - match[0].length);
+    const caret = range.getBoundingClientRect(), box = rich.getBoundingClientRect();
+    menu.style.left = Math.max(8, Math.min(innerWidth - 276, caret.left || box.left + 12)) + 'px';
+    menu.style.top = Math.max(8, Math.min(innerHeight - 132, (caret.bottom || box.top + 28) + 6)) + 'px';
+    menu.hidden = false; rich.setAttribute('aria-expanded', 'true'); activeIndex = 0; highlight();
+  }
+  function insertReference(index) {
+    if (!atRange) return;
+    const ref = refs[index], range = atRange.cloneRange();
+    range.deleteContents();
+    const token = document.createElement('span');
+    token.className = libtvMode ? 'mention-badge text-canvas-controls-text border-canvas-controls-border' : 'reference'; token.contentEditable = 'false'; token.dataset.referenceId = ref.id;
+    token.dataset.mentionNodeId = ref.id; token.dataset.mentionMediaType = 'image';
+    token.innerHTML = `<img src="${ref.image}" alt=""><span data-mention-label="true">@${ref.name}</span>`;
+    range.insertNode(token);
+    const space = document.createTextNode(' '); token.after(space); range.setStart(space, 1); range.collapse(true);
+    const selection = getSelection(); selection.removeAllRanges(); selection.addRange(range);
+    closeMenu(); rich.focus(); counts.reference++;
+    rich.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText', data: null }));
+  }
+  menu.addEventListener('pointerdown', event => event.preventDefault());
+  menu.addEventListener('click', event => { const button = event.target.closest('[data-index]'); if (button) insertReference(Number(button.dataset.index)); });
+  connected.addEventListener('pointerdown', event => event.preventDefault());
+  connected.addEventListener('click', event => {
+    const button = event.target.closest('[data-index]'); if (!button) return;
+    const selection = getSelection();
+    if (!atRange && selection?.rangeCount && rich.contains(selection.anchorNode)) atRange = selection.getRangeAt(0).cloneRange();
+    insertReference(Number(button.dataset.index));
+  });
+  function updateNativeSuggestion() {
+    if (!libtvMode) return;
+    rich.querySelectorAll('[data-mention-suggest]').forEach(el=>el.remove());
+    const selection=getSelection(); if(!selection?.rangeCount||!selection.isCollapsed)return;
+    const range=selection.getRangeAt(0),node=range.startContainer;
+    if(node.nodeType!==Node.TEXT_NODE||!rich.contains(node)||node.parentElement.closest('[contenteditable=false]'))return;
+    const prefix=node.textContent.slice(0,range.startOffset);
+    const ref=refs.find(item=>prefix.endsWith(item.name)&&prefix[prefix.length-item.name.length-1]!=='@');
+    if(!ref)return;
+    const offset=range.startOffset;
+    if(offset<node.textContent.length)node.splitText(offset);
+    const suggest=document.createElement('span');suggest.contentEditable='false';suggest.dataset.mentionSuggest='1';suggest.dataset.suggestElementId=ref.id;suggest.dataset.suggestHint='点击 或 按Tab键插入';suggest.setAttribute('aria-hidden','true');suggest.className='mention-suggest opacity-50';suggest.textContent='@'+ref.name;suggest.style.opacity='.5';node.after(suggest);
+    range.setStart(node,offset);range.collapse(true);selection.removeAllRanges();selection.addRange(range);
+  }
+  function bindRich() {
+    rich.addEventListener('input', () => { counts.input++; updateNativeSuggestion(); persist(); inspectAt(); });
+    rich.addEventListener('blur', () => { counts.blur++; persist(); });
+    rich.addEventListener('keydown', event => {
+      if (menu.hidden || event.isComposing) return;
+      if (event.key === 'ArrowDown' || event.key === 'ArrowUp') { event.preventDefault(); event.stopPropagation(); activeIndex = (activeIndex + (event.key === 'ArrowDown' ? 1 : -1) + refs.length) % refs.length; highlight(); }
+      if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey) { event.preventDefault(); event.stopPropagation(); insertReference(activeIndex); }
+      if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closeMenu(); }
+    });
+  }
+  bindRich();
+  for (const field of [textarea, transformed]) { field.addEventListener('input', () => { counts.input++; persist(); }); field.addEventListener('blur', () => { counts.blur++; persist(); }); }
+  document.querySelector('#reload').onclick = () => { persist(); location.reload(); };
+  document.querySelector('#replace').onclick = () => { const next = document.createElement('div'); next.id = rich.id; next.setAttribute('role','textbox'); next.setAttribute('aria-multiline','true'); next.setAttribute('aria-label','参考图提示词'); next.contentEditable = 'true'; next.innerHTML = rich.innerHTML; rich.replaceWith(next); rich = next; closeMenu(); bindRich(); persist(); };
+  document.querySelector('#clear').onclick = () => { localStorage.removeItem(key); location.reload(); };
+  document.addEventListener('pointerdown', event => { if (!rich.contains(event.target) && !menu.contains(event.target)) closeMenu(); });
+  persist();
+})();
+</script>
+</html>

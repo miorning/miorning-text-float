@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-23",
+  "images": [
+    {
+      "file": "A_放大编辑_16x9.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "D86F349D15AEE0248362980A5E7D795ED7D90FF29EBEDFC4735EAF3F56ACD9F6",
+      "decoded": true
+    },
+    {
+      "file": "A_放大编辑_4x3.png",
+      "width": 1448,
+      "height": 1086,
+      "sha256": "873138935A2D60504E975A9B4F1688CE39060B17BF47B661A305B96E7AD83BAA",
+      "decoded": true
+    },
+    {
+      "file": "B_版本回溯_16x9.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "A86A5F877A04AC39450612B68B2C1B555169BFB6D4AFD896100B270A97D77D22",
+      "decoded": true
+    },
+    {
+      "file": "B_版本回溯_4x3.png",
+      "width": 1448,
+      "height": 1086,
+      "sha256": "12E3C75C27BAE7042E5BB3EE954B989E9918DE2A678A30F4ED648C1F8BF93A53",
+      "decoded": true
+    },
+    {
+      "file": "C_Tab引用_16x9.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "46212720E17B2A083A18275D07C10716707C8D815EE2026C7F5483ECD9941CCD",
+      "decoded": true
+    },
+    {
+      "file": "C_Tab引用_4x3.png",
+      "width": 1448,
+      "height": 1086,
+      "sha256": "04DDCA4723AC44F3D39C0DDA11A5BEC658050E2A7544CED3AF0BCA1B3219194F",
+      "decoded": true
+    }
+  ],
+  "tool": "Built-in imagegen",
+  "notes": [
+    "16:9 native images are 1672x941, near 16:9.",
+    "4:3 native images are 1448x1086, exact 4:3.",
+    "Each 4:3 composition was generated independently. No external image cropping/resizing.",
+    "Chinese headlines, brand text and mascot visually reviewed."
+  ]
+}

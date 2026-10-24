@@ -1,0 +1,195 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-23",
+  "tool": "OpenAI image generation",
+  "referencePathBase": "repository root",
+  "note": "AI-generated promotional illustrations, not platform screenshots. Referenced UI screenshots use a local testing fixture; no private user prompts. Native output files are unchanged.",
+  "concepts": [
+    {
+      "id": "A",
+      "concept": "A 放大编辑",
+      "variants": [
+        {
+          "file": "A_放大编辑_16x9.png",
+          "targetRatio": "16:9",
+          "actualAspect": "near 16:9",
+          "requestedPixels": [
+            1920,
+            1080
+          ],
+          "nativePixels": [
+            1672,
+            941
+          ],
+          "references": [
+            {
+              "path": "extension/icons/original.png",
+              "role": "authoritative original black-cat character identity",
+              "nativePixels": [
+                162,
+                162
+              ]
+            },
+            {
+              "path": "docs/images/screenshot.png",
+              "role": "actual extension UI in a local testing fixture; palette and feature reference, not a live platform screenshot"
+            }
+          ],
+          "prompt": "Use case: ads-marketing. Create ONE finished Chinese video thumbnail/cover for the independent browser extension 喵咛文本窗, landscape 16:9, requested exact 1920×1080 full bleed composition. Input image 1 is the authoritative character identity reference, not a screenshot to paste wholesale. Input image 2 is only the authentic plugin UI visual reference; discard the surrounding testing page and its technical labels. Maintain the black cat's instantly recognizable face: rounded black head, triangular black ears with dark pink inner ears, low half-lidded ivory eyes, deadpan unimpressed expression, tiny pink nose and ivory muzzle, round black paws and red scarf accent. Same mascot as the reference, not a generic cute blue-eyed cat. A waist-up pose only so no invented costume is needed.\nCreative direction A: “give the prompt room to breathe”. A restrained, polished Bilibili creator-tool cover with huge bold Chinese editorial typography and a delightful oversized mascot; warm ivory background, charcoal interface strip, warm vermilion red accents, tiny muted sage accent. No noisy texture, no particles, no glowing science fiction, no icon soup.\nExact prominent headline in two lines at left, very large, beautifully typeset and readable at small thumbnail size: “提示词” / “别挤着写”. “别挤着写” is the strongest line, can use warm red for one phrase. Smaller brand text “喵咛文本窗” at top left. A small secondary line at bottom left: “放大编辑 · 拖动缩放”. Do not include any other marketing copy.\nOn the right and lower center, show a large crisp floating text-editor window with a dark header, an ivory document and a warm-red 确认 button inspired by input image2. A large black cat leans over its upper right corner, one round paw holding a window corner and the other proudly showing the beige board with the vivid red checkmark from its reference. A tiny cramped source text box behind the expanded one and one simple diagonal resize handle communicate expansion; do not use a split-screen or a busy infographic. Only 2-3 short horizontal lines of text in the document, never dense technical UI. Cat expression remains half-lidded, with a subtly confident pose. Ensure paws are anatomically clear with no duplicate limbs.\nComposition: headline owns approximately left 48%, character and window own right 52%, ample spacing, not a screenshot collage. Everything sits within 5% safe margins. Strong dark/light separation. No platform logos other than the requested own brand, no watermark, no claims about universal website support or AI generation. Professionally finished, flat graphic editorial composition with softly shaded 2.5D mascot matching the original."
+        },
+        {
+          "file": "A_放大编辑_4x3.png",
+          "targetRatio": "4:3",
+          "actualAspect": "exact 4:3",
+          "requestedPixels": [
+            1600,
+            1200
+          ],
+          "nativePixels": [
+            1448,
+            1086
+          ],
+          "references": [
+            {
+              "path": "covers/A_放大编辑_16x9.png",
+              "role": "approved wide cover; layout adaptation reference"
+            }
+          ],
+          "prompt": "Use case: ads-marketing / identity-preserve. Recompose the referenced approved cover into a finished 4:3 landscape video thumbnail, preferred 1600 x 1200, full frame. Do NOT crop the reference. Preserve exactly the same character identity, typography character, palette, polish and concept. Reference is the approved wide A cover of 喵咛文本窗: warm ivory backdrop, giant charcoal and vermilion Chinese title, dark editor toolbar with a warm-red confirm button, oversized half-lidded black cat holding beige red-check board and editor frame, red scarf. The cat is the user's own black-cat IP; same triangular ears, pink nose, ivory eyes, slightly bored expression and round paws. Keep full ears and paws inside canvas.\nExact text, no additions or spelling changes: brand “喵咛文本窗”; huge headline “提示词” on first line and “别挤着写” on second line; subtitle “放大编辑 · 拖动缩放”. Reflow into a taller balanced frame: title upper left taking about45%, black cat upper right, large floating editor spans lower center and right with dark header and readable “喵咛文本窗”, fontsize “24”, minus plus buttons and coral “确认”. Text in large editor can be the same two short sample sentences from the reference. Small cramped source window and one simple red expansion arrow near lower left to communicate enlargement. The left cat paw grasps editor upper edge; the other holds beige clipboard with bold red checkmark. Avoid duplicate limbs or disconnected paws. \nMaintain bold clear typography visible at thumbnail size, all text correctly Chinese, leave 4% safe margins, no clipped headline or cut ears. Simple 2.5D soft shading and clean areas, no noisy texture, no extra icons, no sparkles, no science-fiction glow, no other brands, no watermark, no claims about AI generation or universal websites. One independent 4:3 cover, not a comparison or collage."
+        }
+      ]
+    },
+    {
+      "id": "B",
+      "concept": "B 版本回溯",
+      "variants": [
+        {
+          "file": "B_版本回溯_16x9.png",
+          "targetRatio": "16:9",
+          "actualAspect": "near 16:9",
+          "requestedPixels": [
+            1920,
+            1080
+          ],
+          "nativePixels": [
+            1672,
+            941
+          ],
+          "references": [
+            {
+              "path": "extension/icons/original.png",
+              "role": "authoritative original black-cat character identity",
+              "nativePixels": [
+                162,
+                162
+              ]
+            },
+            {
+              "path": "docs/images/screenshot.png",
+              "role": "actual extension UI in a local testing fixture; palette and feature reference, not a live platform screenshot"
+            }
+          ],
+          "prompt": "Use case: ads-marketing. Create ONE finished Chinese video cover for the standalone browser extension 喵咛文本窗, exact landscape 16:9 composition, ideally 1920 x 1080 pixels. This is a refined, extremely readable Bilibili creator-tools thumbnail, not a screenshot mockup.\nReference image 1 is the user's original mascot identity: preserve this EXACT black cat IP, with black short fur, round broad head, pointed ears, half-lidded unimpressed eyes, small cream muzzle and pink nose, red scarf accents, thick round black paws, ivory paw pads, thick clean outline and softly painted original sticker shading. Do not substitute another cat or change its expression to smiling. Reference image 2 is the real extension interface for palette, version labels, timeline slider and design facts; do NOT reproduce the screenshot's testing webpage or paragraphs.\nVisual concept: reassuring version history while revising text. Warm ivory background with large restrained sage/mint block, charcoal text, warm-red accent. Very clean professional graphic art, generous whitespace, no noise, texture, grain, sparkles, gradients or clutter.\nExact Chinese typography: giant two-line main title at upper left taking about 40% of layout:\n“改来改去”\n“原稿还在”\nUse very bold friendly modern Chinese sans-serif with perfect glyphs; charcoal first line, muted dark sage second line with a small warm-red underline. Under or near title small accurate brand “喵咛文本窗”. Small capsule subline exactly “版本保存 · 旧版续写”. No other marketing claims.\nLarge half-body original black cat at the right, about 35% of canvas, holding its familiar cream sheet with the big red checkmark like reference 1. Keep full ears, paws and sheet in frame. The cat looks confident and mildly unimpressed. Beside/under headline in the remaining 25%, show three neatly stepped rectangular text-version cards, cream interiors, dark toolbar, subtle soft shadow, not browser chrome. Clearly readable labels “版本 1”, “版本 2”, “版本 3” on the three cards; only short quiet grey placeholder rules below. A simple sage horizontal slider below the cards has one circular thumb and three clear stops, representing reversible selection of saved versions. Avoid recursive floating panels or overlap hiding titles.\nMaintain clear silhouette, strong hierarchy at thumbnail size. 5% safe margins. Title and cat must not be cropped. No other characters, no other logos, no watermark, no clouds, no invented cloud backup or universal image reference claims. Deliver one polished final 16:9 PNG."
+        },
+        {
+          "file": "B_版本回溯_4x3.png",
+          "targetRatio": "4:3",
+          "actualAspect": "exact 4:3",
+          "requestedPixels": [
+            1600,
+            1200
+          ],
+          "nativePixels": [
+            1448,
+            1086
+          ],
+          "references": [
+            {
+              "path": "covers/B_版本回溯_16x9.png",
+              "role": "approved wide cover; layout adaptation reference"
+            },
+            {
+              "path": "extension/icons/original.png",
+              "role": "authoritative original black-cat character identity",
+              "nativePixels": [
+                162,
+                162
+              ]
+            },
+            {
+              "path": "docs/images/screenshot.png",
+              "role": "actual extension UI in a local testing fixture; palette and feature reference, not a live platform screenshot"
+            }
+          ],
+          "prompt": "Use case: ads-marketing, identity-preserve. Create ONE final 4:3 landscape version of the FIRST reference cover, ideally 1600 x 1200 pixels. This must be a newly arranged 4:3 composition, not a cropped or letterboxed 16:9 image. Preserve the original polished design, warm-ivory background, mint/sage block, charcoal and dark-sage type, warm-red underline, clean linework and simple soft shadows.\nReference 1 is the approved wide cover: preserve its exact visual style, text, cat rendering, version cards and graphic story. Reference 2 is the user's original cat IP: same black round broad head, pointed ears, half-lidded unimpressed eyes, small cream muzzle with pink nose, red scarf accent and thick black paws holding cream sheet with red check mark. Reference 3 shows actual extension interface facts only, don't reproduce testing page.\nReflow carefully for 4:3: giant two-line Chinese title across the upper left/top half, still the first thing seen, exact verbatim text “改来改去” on line one and “原稿还在” on line two. Keep all Chinese glyphs correct. Brand “喵咛文本窗” below the title and compact capsule “版本保存 · 旧版续写”. Original black cat on right lower half, with FULL pointed ears, paws and red-check sheet in frame, reasonably large clear silhouette. Three tidy cream version cards along bottom left, with dark top bars labeled exactly “版本 1”, “版本 2”, “版本 3”, short neutral grey text rules. A simple muted sage slider underneath connects three clear stops, central circular thumb active. Cat, headline and cards should have breathing space, never overlap or cover each other's text.\nProfessional Bilibili creator tool thumbnail with bold readable modern Chinese sans-serif typography. Maintain 4% safe margins on every edge. No changes to spelling, no extra marketing copy, no extra icons/characters, no other brand/watermark, no clutter, grain, glow, cloud or cloud backup claims. The image must fill a 4:3 canvas with a balanced custom layout. Output final PNG."
+        }
+      ]
+    },
+    {
+      "id": "C",
+      "concept": "C 图片引用",
+      "variants": [
+        {
+          "file": "C_Tab引用_16x9.png",
+          "targetRatio": "16:9",
+          "actualAspect": "near 16:9",
+          "requestedPixels": [
+            1920,
+            1080
+          ],
+          "nativePixels": [
+            1672,
+            941
+          ],
+          "references": [
+            {
+              "path": "extension/icons/original.png",
+              "role": "authoritative original black-cat character identity",
+              "nativePixels": [
+                162,
+                162
+              ]
+            },
+            {
+              "path": "docs/images/references.png",
+              "role": "actual extension name-to-reference UI in a local testing fixture, not a live platform screenshot",
+              "nativePixels": [
+                1280,
+                900
+              ]
+            }
+          ],
+          "prompt": "Use case: ads-marketing. Create ONE finished Chinese Bilibili video thumbnail for the browser extension 喵咛文本窗, landscape EXACT 16:9, preferred 1920 × 1080 PNG. This is cover concept C about referring to images by typing their names and pressing Tab.\nInput image 1 is the authoritative character identity reference, NOT a texture to merely paste: retain this exact original black cat IP with rounded black short-haired head, pointed ears, sleepy half-lidded annoyed eyes, ivory muzzle, tiny pink nose, red scarf accent, chunky round dark paws. Enlarge and redraw faithfully as the same character in a polished outlined illustration. Input image 2 is only the authentic plugin UI and palette reference.\nArt direction: striking premium creator-tool cover, highly legible at thumbnail size, clean deep charcoal background, enormous warm ivory Chinese headline, muted warm red accent and a little desaturated sage. No neon futuristic effects, no grain, no fragments, no decorative clutter. Only three meaningful visual groups. Headline about 40%, cat about 35%, clear interaction about 20%. Crisp printlike shapes and restrained dimensional shadows.\nComposition: left half enormous bold typographic two-line headline reading EXACTLY:\n“打出图名”\n“Tab 就引用”\nSet Tab in a strong warm-red rounded keyboard-key treatment while keeping second line readable. Small brand near top left EXACT “喵咛文本窗”. Smaller explanatory badge beneath headline EXACT “灰色预览 · Tab 确认”.\nOn right, a very large waist-up faithful black cat with half-closed unimpressed eyes, cream muzzle and red scarf presses one broad physical Tab keycap with one chunky paw; paw anatomy natural, no extra fingers. Cat and key dominate, whole face and ears remain inside safe margins.\nLower middle contains one compact simplified floating editor card consistent with authentic screenshot: charcoal top strip and cream body. A clean brief sequence shows plain text “测试1”, then muted grey “@ 测试1”, then a confirmed compact image-reference pill containing a simple turquoise circle thumbnail and “@ 测试1”. Use two thin small arrows to show this progression. Make the GREY middle preview visually inactive and the final reference pill active in restrained sage, so the feature is honest. This UI illustration is clearly simplified, no fake extra settings or irrelevant UI.\nAll Chinese must be flawless and exactly match above, especially 喵咛文本窗 and 引用. Do not add any additional slogans, watermarks, English branding, claims of universal platforms, generated video, cloud backup, or numerical promises. Keep generous outer safe area; no cropping of text, ears, paws or keycap. Opaque background. Deliver ONE single full finished thumbnail image, not a contact sheet."
+        },
+        {
+          "file": "C_Tab引用_4x3.png",
+          "targetRatio": "4:3",
+          "actualAspect": "exact 4:3",
+          "requestedPixels": [
+            1600,
+            1200
+          ],
+          "nativePixels": [
+            1448,
+            1086
+          ],
+          "references": [
+            {
+              "path": "covers/C_Tab引用_16x9.png",
+              "role": "approved wide cover; layout adaptation reference"
+            },
+            {
+              "path": "extension/icons/original.png",
+              "role": "authoritative original black-cat character identity",
+              "nativePixels": [
+                162,
+                162
+              ]
+            }
+          ],
+          "prompt": "Use case: ads-marketing / identity-preserve layout adaptation. Recompose the FIRST reference thumbnail as a complete independent 4:3 landscape cover, preferred exact 1600 × 1200 PNG, full-frame opaque art. Do NOT just crop it. Reflow the complete design into a taller 4:3 frame so the entire headline, cat ears and paws, Tab key, and all UI sequence remain comfortably inside safe margins.\nInput image 1 is the finished approved 16:9 cover and defines the graphic design, color palette, hierarchy, character drawing and exact copy. Input image 2 is the authoritative black-cat IP reference: rounded black head, pointed ears, sleepy half-lidded annoyed eyes, tiny pink nose, subtle ivory muzzle, red scarf accent, chunky round paws. Keep this same black cat and sleepy expression.\nKeep charcoal background, warm cream HUGE bold headline, warm red Tab highlight, desaturated sage small label, no neon, no extra clutter or particles. Rebalance layout for 4:3: top-left small black-cat logo and brand “喵咛文本窗”; upper-left huge headline EXACT two lines “打出图名” and “Tab 就引用”; large half-body cat on upper-right pressing one large physical Tab key. Below headline include pill EXACT “灰色预览 · Tab 确认”. A broad compact cream editor card at bottom spans most frame width, charcoal top strip “喵咛文本窗”, with the simple accurate interaction sequence: plain “测试1” → grey inactive “@ 测试1” → sage active pill with turquoise circle thumbnail and “@ 测试1”. Three stages only, clear thin arrows. Avoid copying full screenshot details.\nMaintain perfect Chinese text, particularly 喵咛文本窗 and 引用. Clear readable at small video thumbnail sizes. Main title and cat are largest. Keep only three visual zones; retain smooth crisp polished outlines, restrained shadows. No extra claims, English brand, numerical claims, watermark, extraneous icons. Deliver ONE image, not comparison or contact sheet."
+        }
+      ]
+    }
+  ]
+}

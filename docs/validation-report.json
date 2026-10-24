@@ -1,0 +1,376 @@
+{
+  "startedAt": "2026-10-24T03:08:45.403Z",
+  "mode": "isolated headless Chromium, local fixture only; actual extension source injected",
+  "browser": "chrome.exe",
+  "tests": [
+    {
+      "name": "click opens original textarea; confirmation closes and restores style",
+      "status": "passed",
+      "milliseconds": 692
+    },
+    {
+      "name": "two Enter newlines and Ctrl+Enter commit survive refresh",
+      "status": "passed",
+      "milliseconds": 290
+    },
+    {
+      "name": "font controls clamp 14–32 and preserve native textarea caret",
+      "status": "passed",
+      "milliseconds": 311
+    },
+    {
+      "name": "keep-original-text defaults off and checkbox retains editor selection",
+      "status": "passed",
+      "milliseconds": 237
+    },
+    {
+      "name": "title drag and keyboard movement retain bounds",
+      "status": "passed",
+      "milliseconds": 593
+    },
+    {
+      "name": "all eight resize handles independently move correct edges",
+      "status": "passed",
+      "milliseconds": 2834,
+      "details": [
+        {
+          "direction": "n",
+          "width": 760,
+          "height": 540
+        },
+        {
+          "direction": "ne",
+          "width": 780,
+          "height": 540
+        },
+        {
+          "direction": "e",
+          "width": 780,
+          "height": 520
+        },
+        {
+          "direction": "se",
+          "width": 780,
+          "height": 540
+        },
+        {
+          "direction": "s",
+          "width": 760,
+          "height": 540
+        },
+        {
+          "direction": "sw",
+          "width": 780,
+          "height": 540
+        },
+        {
+          "direction": "w",
+          "width": 780,
+          "height": 520
+        },
+        {
+          "direction": "nw",
+          "width": 780,
+          "height": 540
+        }
+      ]
+    },
+    {
+      "name": "resize keyboard and minimum geometry",
+      "status": "passed",
+      "milliseconds": 417
+    },
+    {
+      "name": "contenteditable native Enter produces two visible line breaks",
+      "status": "passed",
+      "milliseconds": 325
+    },
+    {
+      "name": "existing portal @ menu opens above editor and inserts native reference token",
+      "status": "passed",
+      "milliseconds": 379
+    },
+    {
+      "name": "text entered after reference supports native undo without deleting token",
+      "status": "passed",
+      "milliseconds": 305
+    },
+    {
+      "name": "Escape closes after native menu has been dismissed",
+      "status": "passed",
+      "milliseconds": 307
+    },
+    {
+      "name": "DOM replacement cleans floating styles and supports new editor",
+      "status": "passed",
+      "milliseconds": 366
+    },
+    {
+      "name": "transformed clipped ancestor does not shrink or clip floating editor",
+      "status": "passed",
+      "milliseconds": 264
+    },
+    {
+      "name": "narrow viewport and reduced motion retain reachable controls",
+      "status": "passed",
+      "milliseconds": 303
+    },
+    {
+      "name": "viewport shrink clamps window and retains usable editor",
+      "status": "passed",
+      "milliseconds": 201
+    },
+    {
+      "name": "composition guard does not close or prevent candidate confirmation",
+      "status": "passed",
+      "milliseconds": 249,
+      "details": "Synthetic composition guard only; actual OS IME remains unverified."
+    },
+    {
+      "name": "toggle pauses and resumes feature without duplicate shell",
+      "status": "passed",
+      "milliseconds": 369
+    },
+    {
+      "name": "complete reference name shows gray suggestion without inserting a token",
+      "status": "passed",
+      "milliseconds": 322
+    },
+    {
+      "name": "Tab replaces complete name with native token by default",
+      "status": "passed",
+      "milliseconds": 270
+    },
+    {
+      "name": "keep-original checkbox preserves name and adds native token on Tab",
+      "status": "passed",
+      "milliseconds": 372
+    },
+    {
+      "name": "Shift+Tab keeps text without accepting name suggestion",
+      "status": "passed",
+      "milliseconds": 272
+    },
+    {
+      "name": "Escape dismisses name suggestion while keeping editor open",
+      "status": "passed",
+      "milliseconds": 238
+    },
+    {
+      "name": "continued typing hides name suggestion without changing text",
+      "status": "passed",
+      "milliseconds": 284
+    },
+    {
+      "name": "duplicate connected reference names do not auto-select a candidate",
+      "status": "passed",
+      "milliseconds": 261
+    },
+    {
+      "name": "composition state suppresses name candidate and Tab acceptance",
+      "status": "passed",
+      "milliseconds": 268,
+      "details": "Synthetic composition-state guard; actual operating-system candidate UI unverified."
+    },
+    {
+      "name": "unmatched text leaves native Tab focus navigation intact",
+      "status": "passed",
+      "milliseconds": 256
+    },
+    {
+      "name": "native reference button no-op preserves original name and never calls undo",
+      "status": "passed",
+      "milliseconds": 277
+    },
+    {
+      "name": "failed name deletion retains original text plus reference without undoing user work",
+      "status": "passed",
+      "milliseconds": 269
+    },
+    {
+      "name": "pending acceptance cannot undo a different focused field",
+      "status": "passed",
+      "milliseconds": 282
+    },
+    {
+      "name": "closing during pending acceptance cancels callback and preserves text",
+      "status": "passed",
+      "milliseconds": 284
+    },
+    {
+      "name": "native gray mention suggestion is hidden only inside floating editor",
+      "status": "passed",
+      "milliseconds": 300
+    },
+    {
+      "name": "Tab accepts true reference without counting native gray suggestion as token",
+      "status": "passed",
+      "milliseconds": 284
+    },
+    {
+      "name": "complete name split across adjacent text nodes and inline spans still matches",
+      "status": "passed",
+      "milliseconds": 532
+    },
+    {
+      "name": "name matching stops at newline and existing noneditable token boundaries",
+      "status": "passed",
+      "milliseconds": 466
+    },
+    {
+      "name": "v0.2 first open immediately preserves original as version 1",
+      "status": "passed",
+      "milliseconds": 409
+    },
+    {
+      "name": "v0.2 confirmed version 2 persists across reload and preserves version 1",
+      "status": "passed",
+      "milliseconds": 537
+    },
+    {
+      "name": "v0.2 typing and deleting from old version fork without modifying saved versions",
+      "status": "passed",
+      "milliseconds": 1079
+    },
+    {
+      "name": "v0.2 delete version keeps remaining numbers and allocates next number",
+      "status": "passed",
+      "milliseconds": 833
+    },
+    {
+      "name": "v0.2 more than 1000 versions retained and range selects first/middle/last",
+      "status": "passed",
+      "milliseconds": 1019
+    },
+    {
+      "name": "v0.2 histories isolate separate fields and project routes",
+      "status": "passed",
+      "milliseconds": 716
+    },
+    {
+      "name": "v0.2 window dimensions font and keep-text option persist across refresh",
+      "status": "passed",
+      "milliseconds": 744
+    },
+    {
+      "name": "v0.2 immediate input plus Ctrl+Enter commits latest text without draft race",
+      "status": "passed",
+      "milliseconds": 256
+    },
+    {
+      "name": "v0.2 failed persistence keeps edited text and window open until retry succeeds",
+      "status": "passed",
+      "milliseconds": 383
+    },
+    {
+      "name": "v0.2 rich reference snapshots preserve identity but remove executable attributes",
+      "status": "passed",
+      "milliseconds": 666
+    },
+    {
+      "name": "v0.2 branding link icon warm-red confirmation and narrow accessibility",
+      "status": "passed",
+      "milliseconds": 249
+    },
+    {
+      "name": "v0.2 name suggestion remains gray and Tab preserves original when selected",
+      "status": "passed",
+      "milliseconds": 468
+    },
+    {
+      "name": "v0.2 Enter and Tab cannot mutate rich text while confirmation is saving",
+      "status": "passed",
+      "milliseconds": 367
+    },
+    {
+      "name": "v0.2 anonymous equal-label fields retain distinct histories after DOM reordering",
+      "status": "passed",
+      "milliseconds": 598
+    },
+    {
+      "name": "v0.2 Escape draft reopened and confirmed becomes saved without altering earlier draft",
+      "status": "passed",
+      "milliseconds": 501
+    },
+    {
+      "name": "no browser runtime page errors",
+      "status": "passed",
+      "details": []
+    }
+  ],
+  "sourceHashes": {
+    "store.js": "e359a7ad770de1ed12382ec1b73447e4fee7fe28bf0a4f7170fc47bd075d1e9d",
+    "shell.js": "e109262a426ff1f5d8d4527a5425280f153bbc1414edeb17739ae2f3a949a034",
+    "references.js": "1d782c01f843364d0c6218980dd144c66bc6635d5d6592827007b760562841af",
+    "content.js": "4ba1630ecd55511c509d483a7acdaf1c829e04a6da2bd307749b6780684c9450",
+    "background.js": "bcdfffe5dbd8c25c93592dad8c2e964e77d0cbc619791e93d503ae93592df4a4",
+    "manifest.json": "ff2907cf154c10d5e90c3d3d729748d1fdde37d933155a4c39c3acfc11464526",
+    "options.js": "cd0908c1f901a10ff4ef3cae87fdf0a4310f0b280d308551d2b2240d365818a1",
+    "options.html": "9761b44cc73c2b99f43828149ad45a344fb90de8cf9491257b01328142aeaad8"
+  },
+  "limitations": [
+    "Real operating-system IME candidate interaction is not automated.",
+    "Fixture contenteditable is not a substitute for live LibTV React integration."
+  ],
+  "browserVersion": "155.0.8059.85",
+  "pageErrors": [],
+  "extensionSmoke": {
+    "status": "passed",
+    "browser": "msedge.exe headless disposable profile",
+    "manifest": "unmodified production manifest",
+    "network": "All external requests blocked; simulated LibTV-origin document fulfilled exclusively from local fixture.",
+    "sourceScripts": "byte-identical to extension source",
+    "checks": [
+      "MV3 content script auto injection",
+      "textarea Enter/Ctrl+Enter",
+      "LibTV aria-placeholder parent popover branch",
+      "no-role native menu selector",
+      "native mention insertion",
+      "native mention text contrast",
+      "real chrome.storage.local version persistence across reload",
+      "real MV3 settings persistence across reload",
+      "extension assets load",
+      "storage failure leaves editor open and preserves text",
+      "storage retry commits latest text",
+      "no website IndexedDB fallback in extension context",
+      "packaged options page loads; rejects wildcard and duplicate built-in site",
+      "LIMITATION: first-time optional-site browser permission dialog not automated in the production manifest (browser permission prompt remained pending in headless mode); registration is verified separately with a preauthorized fixture manifest."
+    ],
+    "serviceWorkers": [
+      "chrome-extension://cjabmopnpedhmfdapnbgofdjmigdebfk/background.js"
+    ]
+  },
+  "preAuthorizedSitesSmoke": {
+    "status": "passed",
+    "mode": "Disposable msedge.exe profile; fixture-only host preauthorized in a manifest variant; all production JS/CSS/HTML byte-identical",
+    "manifestDifference": {
+      "host_permissions": [
+        "https://qa.miorning.test/*"
+      ]
+    },
+    "sourceHashes": {
+      "store.js": "e359a7ad770de1ed12382ec1b73447e4fee7fe28bf0a4f7170fc47bd075d1e9d",
+      "shell.js": "e109262a426ff1f5d8d4527a5425280f153bbc1414edeb17739ae2f3a949a034",
+      "references.js": "1d782c01f843364d0c6218980dd144c66bc6635d5d6592827007b760562841af",
+      "content.js": "4ba1630ecd55511c509d483a7acdaf1c829e04a6da2bd307749b6780684c9450",
+      "background.js": "bcdfffe5dbd8c25c93592dad8c2e964e77d0cbc619791e93d503ae93592df4a4",
+      "options.js": "cd0908c1f901a10ff4ef3cae87fdf0a4310f0b280d308551d2b2240d365818a1",
+      "options.html": "9761b44cc73c2b99f43828149ad45a344fb90de8cf9491257b01328142aeaad8",
+      "options.css": "b999fb56062767bb4f376e7155d0571f4bd4a3b6f6b3f3d438abacb4f28567f5"
+    },
+    "checks": [
+      "Options add normalizes path to exact origin",
+      "Real registerContentScripts injects production scripts on synthetic origin",
+      "Native textarea text and version storage work",
+      "Disable unregisters injection on refresh",
+      "Enable restores injection and stored history",
+      "Remove unregisters injection and retains text versions"
+    ],
+    "limitation": "The first-time browser permission grant dialog remains unautomated."
+  },
+  "completedAt": "2026-10-24T03:10:05.996Z",
+  "summary": {
+    "passed": 50,
+    "failed": 0
+  }
+}

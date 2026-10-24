@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>网站设置 · 喵咛文本窗</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <header>
+      <a class="brand" href="https://space.bilibili.com/353186187" target="_blank" rel="noopener noreferrer"><img src="icons/48.png" width="48" height="48" alt="喵咛"><span>喵咛文本窗</span></a>
+      <span class="page-tag">网站设置</span>
+    </header>
+    <section class="intro">
+      <h1>把大文本窗带到常用网站</h1>
+      <p>添加网站后，点击可编辑文本框即可打开喵咛文本窗。</p>
+    </section>
+    <section class="panel" aria-labelledby="add-title">
+      <h2 id="add-title">添加支持的网站</h2>
+      <form id="site-form">
+        <label for="site-url">网站地址</label>
+        <div class="add-row"><input id="site-url" name="url" type="text" inputmode="url" spellcheck="false" autocomplete="url" placeholder="https://example.com/canvas" required aria-describedby="url-help"><button type="submit" id="add-site" class="primary">添加网站</button></div>
+        <p id="url-help" class="hint">仅申请这个网站的访问权限。路径会忽略，同域名下的页面都会启用；子域名需单独添加。</p>
+      </form>
+      <div id="feedback" role="status" aria-live="polite"></div>
+    </section>
+    <section class="panel" aria-labelledby="sites-title">
+      <div class="section-heading"><h2 id="sites-title">支持的网站</h2><button id="refresh" class="quiet" type="button">刷新状态</button></div>
+      <div class="site default-site"><div><strong>LibTV</strong><p>www.liblib.tv · liblib.tv</p></div><span class="badge">默认支持</span></div>
+      <div id="site-list" aria-live="polite"><p class="empty">正在读取网站设置…</p></div>
+      <p class="hint footer-hint">添加、停用或移除后，刷新目标网页生效。停用会保留网址和文本版本；移除还会尝试收回该网站的访问权限。</p>
+    </section>
+    <footer>通用网站支持普通文本框与可编辑文本区域。图片 @ 引用依赖网站自身结构，LibTV 以外的平台需实际测试。<br>文本版本与窗口设置保存在本机浏览器扩展中。</footer>
+  </main>
+  <script src="options.js"></script>
+</body>
+</html>
