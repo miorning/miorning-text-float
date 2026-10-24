@@ -3,13 +3,15 @@
   'use strict';
   if (globalThis.MiorningTextFloat) return;
   const lifetime = new AbortController();
-  let enabled = true, active = null, opening = false, openTask = Promise.resolve();
+  const control = globalThis.MiorningTextFloatControl;
+  let enabled = !control, active = null, opening = false, openingContext = null, openTask = Promise.resolve();
   const store = globalThis.MiorningTextFloatStore;
   const pending = new Set();
   const anonymousFields = new WeakMap();
+  let dock=null, controlState=null, controlRevision=0, pauseTimer=0, destroyed=false, destroying=false, preferredTheme='light';
+  let controlsReady=Promise.resolve(), unsubscribeControl=()=>{};
   const track = promise => { pending.add(promise); promise.finally(()=>pending.delete(promise)).catch(()=>{}); return promise; };
   const isLibTV = /(^|\.)liblib\.tv$/.test(location.hostname);
-  const menuSelector = '[role="listbox"],[role="menu"],.fixture-mentions,[data-reference-main-panel="true"]';
   const selector = isLibTV
     ? 'textarea,[contenteditable="true"][aria-placeholder]'
     : 'textarea,[contenteditable="true"],[contenteditable="plaintext-only"]';
@@ -17,6 +19,49 @@
   const set = (el, styles) => Object.entries(styles).forEach(([key, value]) => el.style.setProperty(key, value, 'important'));
   const remember = el => ({el, style: el.getAttribute('style'), popover: el.getAttribute('popover')});
   const equal = (a,b) => a?.kind === b?.kind && a?.value === b?.value;
+  function openSettings(section='') {
+    if (control) return track(control.openOptions(section)).catch(error=>{
+      active?.shell.setStatus(error.message || '设置页未能打开');throw error;
+    });
+    active?.shell.setStatus('安装插件后可打开设置页');
+    return Promise.resolve();
+  }
+  async function pauseActive() {
+    clearTimeout(pauseTimer);
+    if (enabled || destroyed || !active) return;
+    const a=active;
+    // Finish an ongoing IME/native reference operation before restoring the
+    // site's actual field. The global state already blocks every new opening.
+    if (a.composing || a.busy || a.references?.busy) {
+      pauseTimer=setTimeout(pauseActive,120);return;
+    }
+    const saved=await close();
+    if (!saved && !enabled && active===a) dispose(a);
+  }
+  function applyControlState(value) {
+    if (destroyed) return;
+    if (controlState && value.revision < controlState.revision) return;
+    controlState=value;enabled=value.enabled!==false;
+    dock?.update({...value,theme:preferredTheme});
+    if (enabled) clearTimeout(pauseTimer);else track(pauseActive());
+  }
+  async function initializeControls() {
+    if (!control) return;
+    unsubscribeControl=control.subscribe(value=>{controlRevision++;applyControlState(value);});
+    const revision=controlRevision;
+    const [stateResult,settingsResult]=await Promise.allSettled([control.getState(),store.getSettings()]);
+    if (destroyed) return;
+    if (settingsResult.status==='fulfilled') preferredTheme=settingsResult.value.theme || 'light';
+    if (stateResult.status==='fulfilled' && revision===controlRevision) applyControlState(stateResult.value);
+    if (!controlState) controlState={enabled:false,shortcut:{code:'KeyK',alt:true,ctrl:false,shift:false,meta:false},dock:{edge:'right',ratio:.5}};
+    dock=globalThis.MiorningTextFloatDock?.create({
+      state:{...controlState,theme:preferredTheme},
+      logoUrl:globalThis.chrome?.runtime?.getURL ? chrome.runtime.getURL('icons/128.png') : (document.querySelector('meta[name="miorning-dock-logo"]') || document.querySelector('meta[name="miorning-logo"]'))?.content,
+      onToggle:async value=>{const next=await control.setEnabled(value);applyControlState(next);return next;},
+      onShortcut:()=>openSettings('shortcut'),onCache:()=>openSettings('cache'),onSettings:()=>openSettings(),
+      onPosition:position=>control.saveDock(position)
+    });
+  }
   // Only document markup needed by the native editor is retained. In particular,
   // a grey name suggestion is UI, not a saved image reference.
   function safeHTML(value) {
@@ -28,11 +73,12 @@
         if (discard.has(el.tagName) || el.hasAttribute('data-mention-suggest')) {el.remove();continue;}
         clean(el);
         if (!allowed.has(el.tagName)) {el.replaceWith(...el.childNodes);continue;}
-        const token = el.matches('[data-mention-node-id],[data-reference-id]');
+        const tokenSelector = '[data-mention-node-id],[data-reference-id],[data-type="mention"],[data-mention-id],[data-slate-void="true"],[contenteditable="false"]';
+        const token = el.matches(tokenSelector);
         for (const attr of [...el.attributes]) {
           const name = attr.name;
-          const data = /^(data-mention-(node-id|media-type|type|index|label)|data-reference-id|data-draggable-mention)$/.test(name);
-          const common = ['title','dir'].includes(name) || (name === 'class' && (token || el.closest('[data-mention-node-id],[data-reference-id]')));
+          const data = /^(data-mention-(node-id|media-type|type|index|label|id)|data-reference-id|data-draggable-mention|data-(id|type|label|name|node-id|node-uuid|element-id|slate-void))$/.test(name);
+          const common = ['title','dir'].includes(name) || (name === 'class' && (token || el.closest(tokenSelector)));
           const editable = name === 'contenteditable' && token && attr.value === 'false';
           const image = el.tagName === 'IMG' && ['src','alt','width','height'].includes(name);
           if (!(data || common || editable || image)) el.removeAttribute(name);
@@ -51,7 +97,7 @@
     const url = new URL(location.href);
     const project = url.searchParams.get('projectId') || url.searchParams.get('project') || '';
     const space = url.searchParams.get('spaceId') || '';
-    const node = editor.closest('[data-nodeid],.react-flow__node[data-id],[data-node-id]');
+    const node = editor.closest('[data-nodeid],.react-flow__node[data-id],.svelte-flow__node[data-id],.vue-flow__node[data-id],[data-node-id]');
     const nodeId = node?.getAttribute('data-nodeid') || node?.getAttribute('data-id') || node?.getAttribute('data-node-id') || '';
     const ancestor = editor.parentElement?.closest('[id]');
     const scope = node || ancestor || document.body;
@@ -79,7 +125,7 @@
     if (!a.dead) a.shell?.setStatus(`未保存，请重试：${error?.message || '本机存储不可用'}`);
   }
   function queue(a,job) {
-    const task = a.queue.catch(()=>{}).then(job);
+    const task = a.queue.catch(()=>{}).then(()=>a.cleared ? a.doc : job());
     a.queue = task;
     track(task).catch(error=>reportError(a,error));
     return task;
@@ -89,7 +135,10 @@
     const value = snapshot(a.editor);
     return queue(a,async()=>{
       if (!a.doc) {
-        a.doc=await store.load(a.key,a.initial);
+        if (a.epoch == null) a.epoch=await store.getEpoch(a.key);
+        if (a.cleared) return null;
+        a.doc=await store.load(a.key,a.initial,a.epoch);
+        a.epoch=a.doc.epoch;
         a.baseId=a.doc.versions.find(v=>equal(v.snapshot,a.initial))?.id || null;
       }
       const current = a.doc.versions.find(v=>v.id===a.draftId);
@@ -99,11 +148,11 @@
       if (a.dirty || (commit && current)) {
         if (!current) {
           const before = new Set(a.doc.versions.map(v=>v.id));
-          a.doc = await store.createDraft(a.key,{snapshot:value,parentId:a.baseId,ownerToken:a.ownerToken});
+          a.doc = await store.createDraft(a.key,{snapshot:value,parentId:a.baseId,ownerToken:a.ownerToken,epoch:a.doc.epoch});
           a.draftId = a.doc.versions.find(v=>!before.has(v.id) && v.ownerToken===a.ownerToken)?.id;
           if (!a.draftId) throw new Error('未能确认新版本，请重试');
         }
-        a.doc = await store.updateDraft(a.key,{id:a.draftId,ownerToken:a.ownerToken,snapshot:value,commit});
+        a.doc = await store.updateDraft(a.key,{id:a.draftId,ownerToken:a.ownerToken,snapshot:value,commit,epoch:a.doc.epoch});
         a.selectedId = a.draftId;
         if (equal(value,snapshot(a.editor))) a.dirty = false;
         if (commit) {a.baseId=a.draftId;a.draftId=null;}
@@ -141,10 +190,11 @@
     } finally {a.restoring=false;}
   }
   async function selectVersion(a,id) {
-    if (active!==a || a.busy || a.composing || id===a.selectedId) return;
+    if (active!==a || a.busy || a.references?.busy || a.composing || id===a.selectedId) return;
     a.busy=true;renderHistory(a);
     try {
       await flushDraft(a);
+      if (a.cleared || a.dead || active!==a) return;
       const version=a.doc.versions.find(v=>v.id===id);if (!version) return;
       a.selectedId=id;a.baseId=id;a.draftId=null;a.dirty=false;
       writeSnapshot(a,version.snapshot);
@@ -153,12 +203,14 @@
     finally {a.busy=false;renderHistory(a);}
   }
   async function deleteVersion(a,id) {
-    if (active!==a || a.busy || a.composing || !id || id==='__new__') return;
+    if (active!==a || a.busy || a.references?.busy || a.composing || !id || id==='__new__') return;
     a.busy=true;renderHistory(a);
     try {
       await flushDraft(a);
+      if (a.cleared || a.dead || active!==a) return;
       const index=a.doc.versions.findIndex(v=>v.id===id);
-      a.doc=await store.remove(a.key,id);
+      a.doc=await store.remove(a.key,id,a.doc.epoch);
+      if (a.cleared || a.dead || active!==a) return;
       if (a.selectedId===id) {
         const next=a.doc.versions[Math.min(index,a.doc.versions.length-1)];
         a.selectedId=next?.id || '__new__';a.baseId=next?.id || null;a.draftId=null;a.dirty=false;
@@ -174,15 +226,17 @@
     a.settingsTask=task;track(task).catch(error=>reportError(a,error));
   }
   async function whenIdle() {
+    await controlsReady;
     await openTask;
-    if (active?.saveTimer) await flushDraft(active).catch(()=>{});
+    while (active?.references?.busy) await new Promise(resolve=>setTimeout(resolve,20));
+    if (active?.saveTimer && !active.composing) await flushDraft(active).catch(()=>{});
     while(pending.size) await Promise.allSettled([...pending]);
   }
   function restore(record) {
     if (record.el.matches(':popover-open')) record.el.hidePopover();
-    for (const name of ['style', 'popover']) {
-      const value = record[name];
-      if (value == null) record.el.removeAttribute(name); else record.el.setAttribute(name, value);
+    for (const name of ['style','popover']) {
+      if (record[name] == null) record.el.removeAttribute(name);
+      else record.el.setAttribute(name,record[name]);
     }
   }
   function saveSelection(el) {
@@ -205,12 +259,11 @@
     if (active===a) active = null;
     clearTimeout(a.saveTimer);
     a.references?.destroy();
-    a.observer.disconnect(); a.watch.disconnect();
-    cancelAnimationFrame(a.menuFrame);
-    a.menus.forEach(restore);
+    a.menuManager?.destroy(); a.watch?.disconnect();
     restore(a.original);
     if (a.holderRecord) restore(a.holderRecord);
     a.editor.removeAttribute('data-miorning-floating-editor');
+    a.editor.removeAttribute('data-miorning-theme');
     a.shell.destroy();
     // Blurring the actual editor commits the platform's normal pending input.
     a.editor.blur();
@@ -219,6 +272,7 @@
   async function close(commit = true) {
     const a=active;if (!a) return true;
     if (a.composing || a.busy) return false;
+    if (a.references?.busy) {a.shell.setStatus('图片引用正在插入，请稍后确认');return false;}
     a.busy=true;renderHistory(a);
     try {
       await flushDraft(a,commit);
@@ -231,98 +285,64 @@
   function arrange(rect) {
     const a = active; if (!a) return;
     const r = rect.editor;
+    const dark = a.shell.theme === 'dark';
+    const paper = dark ? '#17201d' : '#faf8f2', ink = dark ? '#e8eee9' : '#28332f';
     set(a.holder, {position:'fixed', inset:'auto', left:`${r.left}px`, top:`${r.top}px`, width:`${r.width}px`, height:`${r.height}px`, margin:'0', padding:'0', border:'0', 'max-width':'none', 'max-height':'none', 'min-width':'0', 'min-height':'0', overflow:'visible', background:'#faf8f2', transform:'none', zoom:'1', 'box-sizing':'border-box', 'z-index':'2147483647'});
     set(a.editor, {position: a.holder === a.editor ? 'fixed' : 'relative', width:`${r.width}px`, height:`${r.height}px`, 'min-height':'0', 'max-height':'none', 'min-width':'0', 'max-width':'none', margin:'0', padding:'4px 8px', border:'0', 'border-radius':'0', background:'#faf8f2', color:'#28332f', 'caret-color':'#116d53', '--canvas-controls-text':'#28332f', '--canvas-controls-border':'#bbc9bf', 'font-size':`${a.shell.fontSize}px`, 'line-height':'1.8', 'font-family':'"Segoe UI", "Microsoft YaHei", sans-serif', overflow:'auto', 'overflow-wrap':'anywhere', 'white-space':'pre-wrap', resize:'none', outline:'none', 'box-sizing':'border-box', 'text-align':'start', 'color-scheme':'light', transform:'none'});
-    placeMenus();
+    set(a.holder,{background:paper});
+    set(a.editor,{background:paper,color:ink,'caret-color':dark?'#a4d0b9':'#116d53','--canvas-controls-text':ink,'--canvas-controls-border':dark?'#58695f':'#bbc9bf','color-scheme':dark?'dark':'light'});
+    a.editor.setAttribute('data-miorning-theme',dark?'dark':'light');
+    a.menuManager?.place();
     a.references?.refresh();
-  }
-  function placeMenus() {
-    const a = active; if (!a) return;
-    for (const [el] of a.menus) {
-      if (!el.isConnected) continue;
-      const r = a.shell.rect.editor;
-      const selection = getSelection();
-      let anchor = {left:r.left, bottom:r.top + 34};
-      if (selection.rangeCount && a.editor.contains(selection.anchorNode)) {
-        const b = selection.getRangeAt(0).getBoundingClientRect(); if (b.height) anchor = b;
-      }
-      const width = Math.min(320, innerWidth - 24);
-      const height = Math.min(400, innerHeight - 24);
-      const top = anchor.bottom + height + 8 > innerHeight ? Math.max(8, anchor.bottom - height - 30) : anchor.bottom + 6;
-      set(el, {position:'fixed', inset:'auto', left:`${Math.max(8,Math.min(anchor.left,innerWidth-width-8))}px`,top:`${top}px`,width:`${width}px`, 'max-height':`${height}px`,margin:'0',overflow:'auto',transform:'none', 'z-index':'2147483647'});
-    }
-  }
-  function scanMenus() {
-    const a = active; if (!a) return;
-    for (const [el, record] of a.menus) {
-      if (!el.isConnected || el.hidden || getComputedStyle(el).display === 'none') {
-        restore(record);
-        a.menus.delete(el);
-      }
-    }
-    // Only native suggestion lists near the active field. Never synthesize mention tokens.
-    const scope = a.editor.parentElement?.parentElement;
-    const candidates = new Set(scope?.querySelectorAll(menuSelector) || []);
-    for (const node of a.added) {
-      if (!(node instanceof Element)) continue;
-      for (const el of [node,...node.querySelectorAll(menuSelector)]) {
-        if (el.matches(menuSelector)) candidates.add(el);
-      }
-    }
-    a.added.clear();
-    for (const el of candidates) {
-      if (el === a.editor || el.contains(a.editor) || el.closest('.miorning-text-float-shell') || a.holder.contains(el)) continue;
-      if (!el.getClientRects().length || getComputedStyle(el).display === 'none' || el.hidden || a.menus.has(el)) continue;
-      a.menus.set(el, remember(el));
-      el.setAttribute('popover','manual');
-      el.showPopover();
-    }
-    placeMenus();
   }
   function open(editor) {
     if (opening) return openTask;
-    openTask=openNow(editor);return openTask;
+    openTask=openTask.catch(()=>{}).then(()=>controlsReady).then(()=>openNow(editor));return openTask;
   }
   async function openNow(editor) {
-    if (!enabled || active?.editor === editor || !editor.isConnected || editor.disabled || editor.readOnly) return;
+    if (destroyed || destroying || !enabled || active?.editor === editor || !editor.isConnected || editor.disabled || editor.readOnly) return;
     if (active?.composing) return;
     if (typeof editor.showPopover !== 'function' || editor.hasAttribute('popover')) return;
     opening = true;
     if (active && !await close()) {opening=false;return;}
+    dock?.closeMenu();
     const selection = saveSelection(editor);
     // LibTV's prompt editor has a dedicated relative parent. Its native @ menu
     // remains in that parent, preserving event ancestry and reference identity.
     const parent = editor.parentElement;
     const holder = isLibTV && editor.hasAttribute('aria-placeholder') && parent?.classList.contains('relative') && parent.querySelectorAll('[contenteditable=true]').length === 1 ? parent : editor;
-    const a = {editor, holder, original:remember(editor), holderRecord:holder === editor ? null : remember(holder), selection, composing:false, menus:new Map(), added:new Set(), menuFrame:0, url:location.href,
-      key:fieldKey(editor),ownerToken:crypto.randomUUID(),queue:Promise.resolve(),settingsTask:Promise.resolve(),doc:null,selectedId:'__new__',draftId:null,baseId:null,dirty:false,busy:false,dead:false};
+    const a = {editor, holder, original:remember(editor), holderRecord:holder === editor ? null : remember(holder), selection, composing:false, url:location.href,
+      key:fieldKey(editor),ownerToken:crypto.randomUUID(),queue:Promise.resolve(),settingsTask:Promise.resolve(),doc:null,selectedId:'__new__',draftId:null,baseId:null,dirty:false,busy:false,dead:false,cleared:false};
+    openingContext = a;
     const initial=snapshot(editor);a.initial=initial;
     let settings={};
     try {
-      const results=await Promise.allSettled([store.getSettings(),store.load(a.key,initial)]);
+      // Capture an epoch before loading. A delayed initial load must not recreate
+      // history after another window has explicitly cleared this site's cache.
+      const results=await Promise.allSettled([store.getSettings(),store.getEpoch(a.key)]);
       if (results[0].status==='fulfilled') settings=results[0].value;
       else a.error=results[0].reason;
       if (results[1].status==='rejected') throw results[1].reason;
-      a.doc=results[1].value;
+      a.epoch=results[1].value;
+      if (a.cleared) {opening=false;openingContext=null;return;}
+      a.doc=await store.load(a.key,initial,a.epoch);
+      a.epoch=a.doc.epoch;
       let matching=[...a.doc.versions].reverse().find(v=>equal(v.snapshot,initial));
       if (!matching && a.doc.versions.length) {
-        a.doc=await store.createDraft(a.key,{snapshot:initial,parentId:null,ownerToken:a.ownerToken});
+        a.doc=await store.createDraft(a.key,{snapshot:initial,parentId:null,ownerToken:a.ownerToken,epoch:a.doc.epoch});
         matching=a.doc.versions.find(v=>v.ownerToken===a.ownerToken);
-        a.doc=await store.updateDraft(a.key,{id:matching.id,ownerToken:a.ownerToken,snapshot:initial,commit:true});
+        a.doc=await store.updateDraft(a.key,{id:matching.id,ownerToken:a.ownerToken,snapshot:initial,commit:true,epoch:a.doc.epoch});
       }
       a.baseId=matching?.id || null;
+      a.selectedId=matching?.id || '__new__';
     } catch(error) {a.error=error;}
-    if (!editor.isConnected || location.href!==a.url) {opening=false;return;}
+    if (destroyed || destroying || !enabled || !editor.isConnected || location.href!==a.url || a.cleared) {opening=false;openingContext=null;return;}
     active = a;
     a.shell = globalThis.MiorningTextFloatShell.create({settings,
       logoUrl:globalThis.chrome?.runtime?.getURL ? undefined : document.querySelector('meta[name="miorning-logo"]')?.content,
-      onRect:arrange,onFont:()=>arrange(a.shell.rect),onClose:()=>{track(close()).catch(()=>{});},onFocus:focusEditor,onKeepText:()=>a.references?.refresh(),
+      onRect:arrange,onFont:()=>arrange(a.shell.rect),onTheme:theme=>{preferredTheme=theme;dock?.update({theme});arrange(a.shell.rect);},onClose:()=>{track(close()).catch(()=>{});},onFocus:focusEditor,
       onSettings:value=>persistSettings(a,value),onSelectVersion:id=>track(selectVersion(a,id)),onDeleteVersion:id=>track(deleteVersion(a,id)),
-      onSettingsPage:()=>{
-        if (globalThis.chrome?.runtime?.id) {
-          track(chrome.runtime.sendMessage({type:'MIORNING_TEXT_FLOAT_OPEN_OPTIONS'}).then(result=>{if (!result?.ok) throw new Error(result?.error || '设置页未能打开');})).catch(error=>reportError(a,error));
-        } else a.shell.setStatus('网站设置在安装插件后可用：扩展图标右键 → 选项');
-      }
+      onSettingsPage:()=>{openSettings().catch(()=>{});}
     });
     renderHistory(a);
     if (a.error) reportError(a,a.error);
@@ -330,46 +350,51 @@
     holder.setAttribute('popover','manual');
     arrange(a.shell.rect);
     holder.showPopover();
-    a.observer = new MutationObserver(records => {
-      for (const record of records) {
-        if (record.type === 'attributes') a.added.add(record.target);
-        for (const node of record.addedNodes) a.added.add(node);
-      }
-      if (!a.menuFrame) a.menuFrame = requestAnimationFrame(()=>{a.menuFrame=0;scanMenus();});
-    });
-    a.observer.observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class','aria-hidden','aria-expanded']});
+    a.menuManager = globalThis.MiorningTextFloatMenus?.create({editor,holder,getEditorRect:()=>a.shell.rect.editor,onStatus:text=>a.shell.setStatus(text)});
     a.watch = new MutationObserver(()=>{
       if (!editor.isConnected || location.href !== a.url) {a.composing=false;flushDraft(a).catch(()=>{});dispose(a);}
     });
     a.watch.observe(document.body,{childList:true,subtree:true});
-    a.references = globalThis.MiorningTextFloatReferences?.create({editor,getKeepText:()=>a.shell.keepText,isComposing:()=>a.composing || a.busy,onStatus:text=>a.shell.setStatus(text)});
+    a.references = globalThis.MiorningTextFloatReferences?.create({editor,getTheme:()=>a.shell.theme,isComposing:()=>a.composing || a.busy,onStatus:text=>a.shell.setStatus(text)});
+    a.menuManager?.refresh();
     editor.focus({preventScroll:true}); focusEditor();
     if (!equal(initial,snapshot(editor))) changed(a);
-    opening = false;
+    opening = false; openingContext = null;
   }
   listen(document,'click',event=>{
-    if (event.composedPath().some(el=>el?.classList?.contains('miorning-text-float-shell'))) return;
+    if (event.composedPath().some(el=>el?.classList?.contains('miorning-text-float-shell') || el?.classList?.contains('miorning-text-float-dock'))) return;
     const target = event.target instanceof Element ? event.target.closest(selector) : null;
     if (target && target.getClientRects().length) open(target);
   });
   listen(document,'selectionchange',()=>{
     if (!active) return;
     const selection = saveSelection(active.editor); if(selection) active.selection=selection;
-    placeMenus();
+    active.menuManager?.place();
   });
-  listen(document,'compositionstart',event=>{if(active?.editor.contains(event.target)) active.composing=true;}, {capture:true});
+  listen(document,'compositionstart',event=>{if(active?.editor.contains(event.target)) {active.composing=true;clearTimeout(active.saveTimer);active.saveTimer=0;}}, {capture:true});
   listen(document,'compositionend',event=>{if(active?.editor.contains(event.target)) {active.composing=false;changed(active);}}, {capture:true});
   listen(document,'beforeinput',event=>{if(active?.busy && active.editor.contains(event.target) && !active.restoring) {event.preventDefault();event.stopImmediatePropagation();}}, {capture:true});
   listen(document,'keydown',event=>{
-    const a = active;
-    if (!a || !a.editor.contains(event.target)) return;
-    if (a.busy) {event.preventDefault();event.stopImmediatePropagation();return;}
-    if (a.references?.handleKey(event)) return;
-    if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) {
+    const inDock=event.composedPath().some(el=>el?.classList?.contains('miorning-text-float-dock'));
+    if (inDock) return;
+    if (!active?.composing && controlState && control?.matchesShortcut(event,controlState.shortcut)) {
       event.preventDefault();event.stopImmediatePropagation();
-      if (!event.isComposing && !a.composing && event.keyCode !== 229) track(close()).catch(()=>{});
+      track(control.toggle().then(applyControlState)).catch(error=>active?.shell.setStatus(error.message || '全局开关未能保存'));
       return;
     }
+    const a = active;
+    if (!a) return;
+    if (event.key === 'Escape') {
+      if (event.isComposing || a.composing || event.keyCode === 229) return;
+      const inWindow=event.composedPath().includes(a.shell.element) || a.editor.contains(event.target) || a.menuManager?.owns(event.target);
+      if (!inWindow) return;
+      event.preventDefault();event.stopImmediatePropagation();
+      if (!a.shell.closeTransient?.()) track(close()).catch(()=>{});
+      return;
+    }
+    if (!a.editor.contains(event.target)) return;
+    if (a.busy) {event.preventDefault();event.stopImmediatePropagation();return;}
+    if (a.references?.handleKey(event)) return;
     if (event.key === 'Enter' && !event.isComposing && !a.composing && event.keyCode !== 229) {
       event.stopImmediatePropagation();
       // Chromium's default contenteditable paragraph insertion can turn two Enters
@@ -377,29 +402,39 @@
       // line break and keeps the browser's input/undo pipeline and mention nodes.
       if (!(a.editor instanceof HTMLTextAreaElement)) {
         event.preventDefault();
-        document.execCommand('insertLineBreak');
+        // With pre-wrap Chromium inserts a literal newline, which collapses to a
+        // space when a site's normal white-space style is restored. Ask the native
+        // editing command for a structural BR without rewriting framework DOM.
+        const value=a.editor.style.getPropertyValue('white-space'),priority=a.editor.style.getPropertyPriority('white-space');
+        a.editor.style.setProperty('white-space','normal','important');
+        try {document.execCommand('insertLineBreak');}
+        finally {a.editor.style.setProperty('white-space',value,priority);}
       }
-    }
-    if (event.key === 'Escape' && !event.isComposing && !a.composing) {
-      // Let the native mention list dismiss first; Escape otherwise keeps the draft.
-      const menuOpen = [...a.menus.keys(),...a.holder.querySelectorAll(menuSelector)]
-        .some(el=>el.isConnected && !el.hidden && el.getClientRects().length && getComputedStyle(el).display!=='none');
-      if (!menuOpen) {event.preventDefault();event.stopImmediatePropagation();track(close(false)).catch(()=>{});}
     }
   },{capture:true});
   listen(document,'input',event=>{
     if(active?.editor.contains(event.target)) {
       active.shell.setStatus('正在编辑原文本 · @ 使用原图片引用');
       changed(active);
-      scanMenus();
+      active.menuManager?.refresh();
     }
   });
   for(const event of ['popstate','hashchange','pagehide']) listen(window,event,()=>{const a=active;if(a){a.composing=false;flushDraft(a).catch(()=>{});dispose(a);}});
+  const unsubscribeCache = store.onCacheCleared?.(({origins})=>{
+    for (const a of new Set([active,openingContext].filter(Boolean))) {
+      if (!origins.includes(store.originFromKey(a.key))) continue;
+      a.cleared=true;clearTimeout(a.saveTimer);a.saveTimer=0;
+      // Never write the in-memory draft back after an explicit cache clear.
+      // The website's visible text is left in place for the user to keep editing.
+      if (active===a) dispose(a);
+    }
+  });
   globalThis.MiorningTextFloat = Object.freeze({
-    version:'0.2.0', open, close, whenIdle,
-    async toggle(){enabled=!enabled;if(!enabled){if(active)active.composing=false;if(!await close())enabled=true;}return enabled;},
-    async destroy(){if(active)active.composing=false;if(!await close())return false;lifetime.abort();delete globalThis.MiorningTextFloat;return true;},
-    getState(){return {enabled,open:!!active,version:'0.2.0',fontSize:active?.shell.fontSize,rect:active?.shell.rect,busy:active?.busy || opening,
+    version:'0.4.1', open, close, whenIdle,
+    async toggle(){if(control){applyControlState(await control.toggle());return enabled;}enabled=!enabled;if(!enabled){if(active)active.composing=false;if(!await close())enabled=true;}return enabled;},
+    async destroy(){destroying=true;if(active)active.composing=false;if(!await close()){destroying=false;return false;}destroyed=true;if(openingContext)openingContext.cleared=true;clearTimeout(pauseTimer);unsubscribeControl();dock?.destroy();unsubscribeCache?.();lifetime.abort();delete globalThis.MiorningTextFloat;return true;},
+    getState(){return {enabled,open:!!active,version:'0.4.1',fontSize:active?.shell.fontSize,theme:active?.shell.theme,rect:active?.shell.rect,busy:active?.busy || active?.references?.busy || opening,
       historyKey:active?.key,selectedId:active?.selectedId,draftId:active?.draftId,versions:active?.doc?.versions.map(({snapshot,ownerToken,...version})=>version)};}
   });
+  controlsReady=initializeControls().catch(error=>console.warn('喵咛文本窗：全局设置未能读取',error.message));
 })();

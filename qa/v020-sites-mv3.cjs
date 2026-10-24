@@ -27,12 +27,12 @@ module.exports=async({chromium,qa,extension,assert,launchOptions})=>{
     await settings.getByRole('button',{name:'停用 https://qa.miorning.test',exact:true}).waitFor();
     const scripts=await worker.evaluate(()=>chrome.scripting.getRegisteredContentScripts());assert.equal(scripts.length,1);assert.deepEqual(scripts[0].matches,['https://qa.miorning.test/*']);assert.deepEqual(scripts[0].js,['store.js','shell.js','references.js','content.js']);
     const custom=await context.newPage();await custom.goto('https://qa.miorning.test/canvas');await custom.locator('#fixture-textarea').click();await custom.locator('.version-tab').first().waitFor();
-    await custom.keyboard.press('Control+A');await custom.keyboard.insertText('自定义站点真实自动注入');await custom.keyboard.press('Control+Enter');await custom.locator('.miorning-text-float-shell').waitFor({state:'detached'});
+    await custom.keyboard.press('Control+A');await custom.keyboard.insertText('自定义站点真实自动注入');await custom.keyboard.press('Escape');await custom.locator('.miorning-text-float-shell').waitFor({state:'detached'});
     await settings.getByRole('button',{name:'停用 https://qa.miorning.test',exact:true}).click();await settings.getByRole('button',{name:'启用 https://qa.miorning.test',exact:true}).waitFor();
     assert.equal((await worker.evaluate(()=>chrome.scripting.getRegisteredContentScripts())).length,0);await custom.reload();await custom.locator('#fixture-textarea').click();assert.equal(await custom.locator('.miorning-text-float-shell').count(),0);
     await settings.getByRole('button',{name:'启用 https://qa.miorning.test',exact:true}).click();await settings.getByRole('button',{name:'停用 https://qa.miorning.test',exact:true}).waitFor();
     await custom.reload();await custom.locator('#fixture-textarea').click();await custom.locator('.version-tab').first().waitFor();assert.equal(await custom.locator('#fixture-textarea').inputValue(),'自定义站点真实自动注入');await custom.screenshot({path:path.join(artifacts,'v020-custom-site.png')});
-    await custom.keyboard.press('Control+Enter');await custom.locator('.miorning-text-float-shell').waitFor({state:'detached'});
+    await custom.keyboard.press('Escape');await custom.locator('.miorning-text-float-shell').waitFor({state:'detached'});
     await settings.screenshot({path:path.join(artifacts,'v020-site-enabled.png')});await settings.getByRole('button',{name:'移除 https://qa.miorning.test',exact:true}).click();await settings.getByText('还没有添加其他网站。').waitFor();
     assert.equal((await worker.evaluate(()=>chrome.scripting.getRegisteredContentScripts())).length,0);await custom.reload();await custom.locator('#fixture-textarea').click();assert.equal(await custom.locator('.miorning-text-float-shell').count(),0);
     const all=await worker.evaluate(()=>chrome.storage.local.get(null));assert.ok(Object.entries(all).some(([key,value])=>key.includes(':history:')&&value.versions.some(v=>v.snapshot.value==='自定义站点真实自动注入')));

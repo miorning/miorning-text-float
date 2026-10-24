@@ -15,7 +15,7 @@ const chrome = {
   action: {onClicked: {addListener() {}}, setBadgeText: async () => {}, setBadgeBackgroundColor: async () => {}},
   scripting: {executeScript: async args => { injections.push(args); return [{result: null}]; }},
   storage: {local: {
-    get(key, callback) { setImmediate(() => callback(own(storage, key) ? {[key]: clone(storage[key])} : {})); },
+    get(key, callback) { const keys = key == null ? Object.keys(storage) : Array.isArray(key) ? key : [key]; setImmediate(() => callback(Object.fromEntries(keys.filter(key => own(storage, key)).map(key => [key, clone(storage[key])])))); },
     set(values, callback) { setImmediate(() => {
       if (failure) { chrome.runtime.lastError = {message: failure}; failure = null; callback(); chrome.runtime.lastError = null; }
       else { for (const [key, value] of Object.entries(values)) storage[key] = clone(value); callback(); }
@@ -24,8 +24,8 @@ const chrome = {
 };
 const own = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 function worker() {
-  const context = vm.createContext({chrome, crypto, console, Uint8Array});
-  context.importScripts = name => { assert.equal(name, 'store.js'); vm.runInContext(source, context); };
+  const context = vm.createContext({chrome, crypto, console, Uint8Array, URL, TextEncoder});
+  context.importScripts = (...names) => { for (const name of names) vm.runInContext(name === 'store.js' ? source : fs.readFileSync(path.join(__dirname, '../extension', name), 'utf8'), context); };
   vm.runInContext(background, context);
   return context.MiorningTextFloatStoreBackend;
 }
@@ -39,6 +39,14 @@ async function test(name, fn) { await fn(); passed++; }
 
 (async () => {
   let first, draft;
+  await test('blank editors start with draft version one without an empty saved version', async () => {
+    for (const [key, initialSnapshot] of [['empty-text', snap('')], ['empty-rich', {kind: 'rich', value: '<p><br></p>'}], ['whitespace', {kind: 'rich', value: '<div>&nbsp;\u200b</div>'}]]) {
+      let doc = await perform('load', {key, initialSnapshot});
+      assert.deepEqual(doc.versions, []); assert.equal(doc.nextNumber, 1);
+      doc = await perform('createDraft', {key, input: {snapshot: snap('第一份内容'), ownerToken: 'first', parentId: null}});
+      assert.equal(doc.versions[0].number, 1); assert.equal(doc.nextNumber, 2);
+    }
+  });
   await test('first load captures version one exactly once', async () => {
     first = await perform('load', {key, initialSnapshot: snap('原始内容')});
     assert.equal(first.versions[0].number, 1);
@@ -64,12 +72,12 @@ async function test(name, fn) { await fn(); passed++; }
     await assert.rejects(perform('updateDraft', {key, input: {id: draft.id, ownerToken: 'session-b', snapshot: snap('抢改')}}), /另一个编辑会话/);
   });
   await test('worker restart retains history and settings', async () => {
-    await perform('saveSettings', {settings: {width: 840, height: 500, left: 20, top: 30, fontSize: 20, keepText: true}});
+    await perform('saveSettings', {settings: {width: 840, height: 500, left: 20, top: 30, fontSize: 20}});
     backend = worker();
     const doc = await perform('load', {key, initialSnapshot: snap('刷新后')});
     assert.equal(doc.versions.length, 3);
     assert.equal(doc.versions[2].snapshot.value, '草稿');
-    assert.deepEqual(await perform('getSettings', {}), {width: 840, height: 500, left: 20, top: 30, fontSize: 20, keepText: true});
+    assert.deepEqual(await perform('getSettings', {}), {width: 840, height: 500, left: 20, top: 30, fontSize: 20});
   });
   await test('independent fields do not share history', async () => {
     const doc = await perform('load', {key: key2, initialSnapshot: snap('另一个输入框')});
@@ -101,7 +109,7 @@ async function test(name, fn) { await fn(); passed++; }
     await perform('saveSettings', {settings: {fontSize: 23}});
     const settings = await perform('getSettings', {});
     assert.equal(settings.fontSize, 23);
-    assert.equal(settings.keepText, true);
+    assert.equal(Object.hasOwn(settings, 'keepText'), false);
     assert.equal(settings.width, 840);
   });
   await test('parallel settings patches merge', async () => {

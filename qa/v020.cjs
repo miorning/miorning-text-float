@@ -29,6 +29,28 @@ module.exports = async function v020(h) {
     assert.ok((await tab(doc.versions[0].id).innerText()).includes('1'));
     await close();await open();assert.equal((await onlyHistory()).versions.length,1,'Opening and confirming unchanged text must not create duplicates');
   });
+  await test('v0.3 empty editor starts first typed content at version 1 and later edits fork version 2', async () => {
+    await reset();
+    await page.locator('#fixture-textarea').evaluate(el=>{el.value='';el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'deleteContentBackward'}));});
+    await open();
+    let doc=await onlyHistory();assert.equal(doc.versions.length,0);assert.equal(doc.nextNumber,1);
+    assert.match(await page.locator('.version-tab[aria-selected="true"]').innerText(),/版本 1/);
+    await replace('首次输入就是第一版');doc=await onlyHistory();
+    assert.equal(doc.versions.length,1);assert.equal(doc.versions[0].number,1);assert.equal(doc.versions[0].status,'draft');
+    await close();doc=await onlyHistory();const first=doc.versions[0];assert.equal(first.status,'saved');
+    await reload();await open();assert.equal((await onlyHistory()).versions.length,1);
+    await replace('下一次修改成为第二版');await close();doc=await onlyHistory();
+    assert.deepEqual(doc.versions[0],first);assert.deepEqual(doc.versions.map(version=>version.number),[1,2]);
+    assert.equal(doc.versions[1].status,'saved');
+  });
+  await test('v0.3 blank rich-text placeholder does not consume version 1', async () => {
+    await reset();
+    await page.locator('#fixture-rich').evaluate(el=>{el.innerHTML='<p><br></p>';el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'deleteContentBackward'}));});
+    await open('#fixture-rich');assert.equal((await onlyHistory()).versions.length,0);
+    await replace('富文本第一版');await close();const doc=await onlyHistory();
+    assert.deepEqual(doc.versions.map(version=>version.number),[1]);assert.equal(doc.versions[0].status,'saved');
+    assert.ok(doc.versions[0].snapshot.value.includes('富文本第一版'));
+  });
   await test('v0.2 confirmed version 2 persists across reload and preserves version 1', async () => {
     await reset();await open();const original=(await onlyHistory()).versions[0];await replace('版本二，确认保存。');
     const draft=await onlyHistory();assert.equal(draft.versions.length,2);assert.equal(draft.versions[1].status,'draft');
@@ -81,24 +103,24 @@ module.exports = async function v020(h) {
     await page.goto(base+'/fixture.html?projectId=isolated-project-two');await inject();await open();
     all=await histories();assert.equal(all.length,3);assert.equal(all.filter(r=>r.value.versions.length===1).length,1);
   });
-  await test('v0.2 window dimensions font and keep-text option persist across refresh', async () => {
+  await test('window dimensions font and theme persist across refresh', async () => {
     await reset();await open();await drag(page.locator('.handle.se'),105,65);
     await page.getByRole('spinbutton',{name:'字体大小'}).fill('24');await page.getByRole('spinbutton',{name:'字体大小'}).press('Enter');
-    await page.getByRole('checkbox',{name:'保留原文字'}).check();await settle();const before=await state();await close();await reload();await open();const after=await state();
+    await page.getByRole('button',{name:'夜间模式',exact:true}).click();await settle();const before=await state();await close();await reload();await open();const after=await state();
     assert.equal(after.rect.width,before.rect.width);assert.equal(after.rect.height,before.rect.height);assert.equal(after.fontSize,24);
-    assert.equal(await page.getByRole('checkbox',{name:'保留原文字'}).isChecked(),true);
+    assert.equal(after.theme,'dark');assert.equal(await page.getByRole('checkbox',{name:'保留原文字'}).count(),0);
     await page.screenshot({path:path.join(qa,'v020-wide.png')});
   });
-  await test('v0.2 immediate input plus Ctrl+Enter commits latest text without draft race', async () => {
+  await test('v0.2 immediate input plus Esc commits latest text without draft race', async () => {
     await reset();await open();
-    await page.locator('#fixture-textarea').evaluate(el=>{el.value='最后一个字也保存：终';el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertText',data:'终'}));el.dispatchEvent(new KeyboardEvent('keydown',{key:'Enter',ctrlKey:true,bubbles:true,cancelable:true}));});
+    await page.locator('#fixture-textarea').evaluate(el=>{el.value='最后一个字也保存：终';el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertText',data:'终'}));el.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));});
     await h.waitClosed();const doc=await onlyHistory();assert.equal(doc.versions.length,2);assert.equal(doc.versions[1].snapshot.value,'最后一个字也保存：终');assert.equal(doc.versions[1].status,'saved');
   });
   await test('v0.2 failed persistence keeps edited text and window open until retry succeeds', async () => {
     await reset();await open();await page.evaluate(()=>{globalThis.qaOriginalPut=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(){throw new DOMException('QA simulated disk full','QuotaExceededError');};});
     await page.getByRole('spinbutton',{name:'字体大小'}).fill('22');await page.getByRole('spinbutton',{name:'字体大小'}).press('Enter');
-    await replace('不可丢失的修改');await page.keyboard.press('Control+Enter');await settle();assert.equal((await state()).open,true);assert.equal(await page.locator('#fixture-textarea').inputValue(),'不可丢失的修改');
-    assert.match(await page.locator('.status').innerText(),/失败|未保存|重试|空间|full/i);
+    await replace('不可丢失的修改');await page.keyboard.press('Escape');await settle();assert.equal((await state()).open,true);assert.equal(await page.locator('#fixture-textarea').inputValue(),'不可丢失的修改');
+    assert.match(await page.locator('.miorning-text-float-shell .status').innerText(),/失败|未保存|重试|空间|full/i);
     await page.evaluate(()=>{IDBObjectStore.prototype.put=qaOriginalPut;delete globalThis.qaOriginalPut;});await close();
     assert.equal((await onlyHistory()).versions.at(-1).snapshot.value,'不可丢失的修改');
     assert.equal((await records()).find(record=>record.key.endsWith(':settings')).value.fontSize,22);
@@ -118,17 +140,17 @@ module.exports = async function v020(h) {
     const link=page.getByRole('link',{name:/喵咛文本窗/});assert.equal(await link.getAttribute('href'),'https://space.bilibili.com/353186187');
     const image=page.locator('.miorning-text-float-shell img').first();await image.waitFor();assert.ok(await image.evaluate(el=>el.complete&&el.naturalWidth>0));
     const button=page.locator('.confirm');const colour=await button.evaluate(el=>getComputedStyle(el).backgroundColor);const [r,g,b]=colour.match(/\d+/g).map(Number);assert.ok(r>g*1.2&&r>b*1.2,colour);
-    for(const locator of [link,button,page.getByRole('checkbox',{name:'保留原文字'}),page.getByRole('slider',{name:'拖动选择文本版本'})]) {const box=await locator.boundingBox();assert.ok(box&&box.x>=0&&box.x+box.width<=390,JSON.stringify(box));}
+    for(const locator of [link,button,page.getByRole('button',{name:'夜间模式',exact:true}),page.getByRole('slider',{name:'拖动选择文本版本'})]) {const box=await locator.boundingBox();assert.ok(box&&box.x>=0&&box.x+box.width<=390,JSON.stringify(box));}
     assert.ok((await state()).rect.editor.height>=80);await page.screenshot({path:path.join(qa,'v020-narrow.png')});
-    const manifest=JSON.parse(fs.readFileSync(path.join(extension,'manifest.json'),'utf8'));assert.equal(manifest.version,'0.2.0');
+    const manifest=JSON.parse(fs.readFileSync(path.join(extension,'manifest.json'),'utf8'));assert.equal(manifest.version,'0.4.1');
     for(const size of [16,32,48,128]) assert.ok(fs.existsSync(path.join(extension,manifest.icons[size])),'Manifest icon '+size+' exists');
   });
-  await test('v0.2 name suggestion remains gray and Tab preserves original when selected', async () => {
-    await reset();await open('#fixture-rich');await page.getByRole('checkbox',{name:'保留原文字'}).check();await replace('参考图 1 · 窗边光线');
+  await test('name suggestion remains gray and Tab replaces original with native reference', async () => {
+    await reset();await open('#fixture-rich');await replace('参考图 1 · 窗边光线');
     assert.equal(await page.locator('.miorning-reference-suggestion').evaluate(el=>el.matches(':popover-open')),true);
     await page.screenshot({path:path.join(qa,'v020-name.png')});await page.keyboard.press('Tab');await settle();
-    assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
-    assert.ok((await page.locator('#fixture-rich').innerText()).startsWith('参考图 1 · 窗边光线'));
+    await page.locator('#fixture-rich [data-mention-node-id="window-light"]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
+    assert.equal(await page.locator('#fixture-rich').evaluate(el=>{const copy=el.cloneNode(true);copy.querySelectorAll('[contenteditable="false"]').forEach(node=>node.remove());return copy.textContent.replace(/\u200b/g,'').trim();}),'');
     await close();const doc=await onlyHistory();assert.equal(doc.versions.at(-1).status,'saved');assert.ok(doc.versions.at(-1).snapshot.value.includes('data-mention-node-id'));
   });
   await test('v0.2 Enter and Tab cannot mutate rich text while confirmation is saving', async () => {
@@ -136,10 +158,10 @@ module.exports = async function v020(h) {
       await MiorningTextFloat.destroy();const store=MiorningTextFloatStore;
       globalThis.qaBlockSave=true;
       globalThis.MiorningTextFloatStore=Object.freeze({...store,updateDraft:async(...args)=>{if(qaBlockSave)await new Promise(resolve=>{globalThis.qaReleaseSave=resolve;});return store.updateDraft(...args);}});
-    });await page.addScriptTag({path:path.join(extension,'content.js')});await open('#fixture-rich');
+    });await page.addScriptTag({path:path.join(extension,'content.js')});await page.evaluate(()=>MiorningTextFloat.whenIdle());await open('#fixture-rich');
     await page.keyboard.press('Control+A');await page.keyboard.insertText('参考图 1 · 窗边光线');
     await page.waitForFunction(()=>document.querySelector('.miorning-reference-suggestion')?.matches(':popover-open'));
-    await page.keyboard.press('Control+Enter');await page.waitForFunction(()=>MiorningTextFloat.getState().busy && typeof qaReleaseSave==='function');
+    await page.keyboard.press('Escape');await page.waitForFunction(()=>MiorningTextFloat.getState().busy && typeof qaReleaseSave==='function');
     const before=await page.locator('#fixture-rich').innerHTML();await page.keyboard.press('Enter');await page.keyboard.press('Tab');
     assert.equal(await page.locator('#fixture-rich').innerHTML(),before);assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),0);
     await page.evaluate(()=>{globalThis.qaBlockSave=false;qaReleaseSave();});await h.waitClosed();
@@ -154,8 +176,8 @@ module.exports = async function v020(h) {
     const all=await histories();assert.equal(all.length,2);const a=all.find(r=>r.key.endsWith(encodeURIComponent(aKey))).value,b=all.find(r=>r.key.endsWith(encodeURIComponent(bKey))).value;
     assert.deepEqual(a.versions.map(v=>v.snapshot.value),['匿名原文A']);assert.deepEqual(b.versions.map(v=>v.snapshot.value),['匿名原文B','B独立第二版']);await close();
   });
-  await test('v0.2 Escape draft reopened and confirmed becomes saved without altering earlier draft', async () => {
-    await reset();await open();await replace('退出保留的草稿');await page.keyboard.press('Escape');await h.waitClosed();
+  await test('v0.2 noncommitting close draft reopens and confirms without altering earlier draft', async () => {
+    await reset();await open();await replace('退出保留的草稿');await page.evaluate(()=>MiorningTextFloat.close(false));await h.waitClosed();
     const original=await onlyHistory();assert.equal(original.versions.at(-1).status,'draft');const draft=original.versions.at(-1);
     await open();await close();const doc=await onlyHistory();assert.deepEqual(doc.versions.find(v=>v.id===draft.id),draft);
     const saved=doc.versions.find(v=>v.status==='saved'&&v.snapshot.value==='退出保留的草稿');assert.ok(saved);assert.notEqual(saved.id,draft.id);

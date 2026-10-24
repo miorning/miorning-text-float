@@ -1,50 +1,36 @@
 # Miorning Text Float · 喵咛文本窗
 
-A draggable, resizable editor for small web text fields, with local version history and native LibTV image references.
+A draggable, resizable editor for small web text fields, with local versions and native image references.
 
-UI is currently Chinese; documentation is available in Chinese and English.
+**v0.4.1** · [Download](https://github.com/miorning/miorning-text-float/releases/download/v0.4.1/MiorningTextFloat-v0.4.1.zip) · [Release notes](https://github.com/miorning/miorning-text-float/releases/tag/v0.4.1)
 
-[简体中文](README.md) · [Download v0.2.0](https://github.com/miorning/miorning-text-float/releases/tag/v0.2.0) · [Bilibili](https://space.bilibili.com/353186187)
+[中文](README.md) · [Bilibili](https://space.bilibili.com/353186187) · [Validation](docs/VALIDATION.md)
 
-![AI-generated promotional illustration, not the actual interface](docs/images/cover.png)
+## Changes
 
-## Features
+- Narrowed native `@` popup detection so canvas titles and ordinary toolbars are not lifted into persistent floating strips.
 
-- Click a text field to expand it. Move the window, resize any edge or corner, and adjust font size.
-- Remember window position, size, font size, and the “keep original text” option.
-- Save the initial text and editing drafts. Editing an older version creates a new version and preserves the original. Delete versions or browse with scrolling and a slider.
-- Use LibTV’s native `@` references. An exact image name shows a gray suggestion; only `Tab` inserts the reference. Replace the name by default, or choose to keep it.
-- Add websites in Settings. Other sites use a generic text-field adapter; proprietary image references need separate integration.
+- Enabled on ordinary HTTP / HTTPS sites by default. **Alt + K** pauses or resumes all tabs; record a custom combination in Settings.
+- A check-sign cat docks to any edge. The sign peeks out when collapsed; hovering or focusing reveals the cat flush against the edge. Click for shortcuts, cache, and the global switch. The icon becomes translucent while paused and remains usable.
+- Improved native `@` popup stacking, including text-only lists, CSS thumbnails, nested popups, and LibTV reference panels. Native options and events are preserved.
+- Removed the keep-original-text option. Complete image names can still show a gray Tab suggestion; unresolved references leave the original text intact.
 
-![Actual editor on the local test page](docs/images/screenshot.png)
+## Editing
 
-## Install
+Drag and resize from all edges. Use **14–64** font sizes, a number-triggered slider, and remembered light / dark mode.
 
-1. Download and extract `MiorningTextFloat-v0.2.0.zip` from the release.
-2. Enable Developer mode on Chrome / Edge’s extensions page.
-3. Choose **Load unpacked** and select the package’s **extension** folder.
-4. Refresh LibTV and click a prompt field. For another site: **Settings → Add website → Grant permission → Refresh**.
+**Enter** inserts a newline; **Esc** confirms and closes. The first Esc dismisses an open font slider. New blank fields start at version 1; editing a saved version creates a new one. Selected-site cache clearing requires a second confirmation and preserves preferences, shortcuts, dock position, and the global switch.
 
-To update, replace the files in the existing installation folder, reload the extension, then refresh the page. Uninstalling deletes local history; avoid uninstalling to update important records.
+## Install / update
 
-## Controls and versions
+Extract `MiorningTextFloat-v0.4.1.zip`; enable Chrome / Edge Developer mode and load **extension**. To update, replace files in the existing installation directory, reload the extension, then refresh open pages. Do not uninstall: uninstalling removes local history.
 
-`Enter`: newline · `Ctrl + Enter`: confirm and close (`Cmd + Enter` also works on macOS) · `Alt + Shift + E`: enable / pause.
+This version requests access to all sites. Accept any browser permission update to enable it. Browser site-access restrictions still apply. Pause / resume synchronizes across existing and new tabs without removing website text.
 
-The first opening saves version 1; editing creates a new version. Drafts save automatically and confirmation commits them. Viewing an older version updates the original field; editing it forks another version. There is no artificial version-count limit, but device storage is finite.
+Shortcuts work while an ordinary page is focused; browser or OS shortcuts can conflict. Browser internal pages and protected stores cannot run content scripts. Use the toolbar icon to open Settings there.
 
-History stays in the current browser profile, separated by website and identifiable field. Anonymous dynamic fields may not retain their identity after refresh. Confirming text does not start image or video generation.
+## Scope and license
 
-## Compatibility and data
+Chrome / Edge 120+. All-site permission does not guarantee every editor is compatible. Closed shadow roots, cross-origin frames, canvas-only inputs, and special reference systems remain bounded. See [Validation](docs/VALIDATION.md).
 
-Chrome / Edge 120+. LibTV is enabled by default. Browser internal pages, closed shadow roots, cross-origin iframes, canvas-only inputs, and some complex editors are not guaranteed to work.
-
-No telemetry, text upload, or generation API. The original website may still save edits through its own behavior. See [Privacy](docs/PRIVACY.md) and [Validation](docs/VALIDATION.md).
-
-50 browser checks, 19 storage checks, and 14 website-setting checks passed. Full installed-extension testing on signed-in LibTV, real OS Chinese IME behavior, and first-time permission prompts still need manual verification.
-
-## License
-
-Code is licensed under [GPL-3.0-or-later](LICENSE). Distributing modified derivatives requires GPL compliance and corresponding source for recipients. Private use or modification does not require public release; this does not require publishing your entered text.
-
-[Development](SOURCE.md) · [Release notes](RELEASE-NOTES.md) · [Assets and dependencies](THIRD_PARTY_NOTICES.md) · [Notice](NOTICE.md)
+No telemetry, prompt-upload service, or generation API. See [Privacy](docs/PRIVACY.md). Code: [GPL-3.0-or-later](LICENSE). [Build](SOURCE.md) · [Release notes](RELEASE-NOTES.md) · [Assets](THIRD_PARTY_NOTICES.md).

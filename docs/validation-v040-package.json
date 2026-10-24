@@ -1,0 +1,14 @@
+{
+  "version": "0.4.0",
+  "scope": "Packaged standalone preview; local isolated browser only",
+  "checks": [
+    "Packaged runtime version matches manifest",
+    "Embedded transparent cat plaque reveals fully on hover and retracts",
+    "Embedded cat logo loads without external files",
+    "Theme and font slider work in bundled preview",
+    "Esc saves multiline text and persisted preferences reopen",
+    "No generation and no browser errors"
+  ],
+  "pageErrors": [],
+  "status": "passed"
+}

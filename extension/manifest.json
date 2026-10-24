@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "喵咛文本窗 · MIORNING",
-  "version": "0.2.0",
-  "description": "放大文本框，拖动缩放、保留版本与图片引用；支持自行添加网站。Enter 换行，Ctrl+Enter 确认。",
+  "version": "0.4.1",
+  "description": "全网页浮动文本窗：拖动缩放、版本与图片引用；贴边图标设置，全局 Alt+K 开关。Enter 换行，Esc 确认。",
   "minimum_chrome_version": "120",
   "permissions": [
     "activeTab",
@@ -11,12 +11,12 @@
     "unlimitedStorage"
   ],
   "action": {
-    "default_title": "开启 / 暂停喵咛文本窗",
+    "default_title": "喵咛文本窗设置",
     "default_icon": {
       "16": "icons/16.png",
-      "128": "icons/128.png",
       "32": "icons/32.png",
-      "48": "icons/48.png"
+      "48": "icons/48.png",
+      "128": "icons/128.png"
     }
   },
   "background": {
@@ -25,29 +25,20 @@
   "content_scripts": [
     {
       "matches": [
-        "https://www.liblib.tv/*",
-        "https://liblib.tv/*"
+        "http://*/*",
+        "https://*/*"
       ],
       "js": [
+        "control.js",
         "store.js",
         "shell.js",
         "references.js",
+        "menus.js",
+        "dock.js",
         "content.js"
       ],
       "run_at": "document_idle"
     }
-  ],
-  "commands": {
-    "_execute_action": {
-      "suggested_key": {
-        "default": "Alt+Shift+E"
-      },
-      "description": "开启或暂停浮动文本编辑"
-    }
-  },
-  "optional_host_permissions": [
-    "http://*/*",
-    "https://*/*"
   ],
   "options_ui": {
     "page": "options.html",
@@ -55,9 +46,9 @@
   },
   "icons": {
     "16": "icons/16.png",
-    "128": "icons/128.png",
     "32": "icons/32.png",
-    "48": "icons/48.png"
+    "48": "icons/48.png",
+    "128": "icons/128.png"
   },
   "web_accessible_resources": [
     {
@@ -66,8 +57,13 @@
         "https://*/*"
       ],
       "resources": [
-        "icons/48.png"
+        "icons/48.png",
+        "icons/128.png"
       ]
     }
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
   ]
 }

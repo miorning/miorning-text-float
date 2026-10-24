@@ -1,3 +1,4 @@
+param([switch]$SkipCovers)
 $ErrorActionPreference = 'Stop'
 function Get-ContentSha256([string]$FilePath) {
   $inputStream = [IO.File]::OpenRead($FilePath)
@@ -22,14 +23,17 @@ foreach ($file in @('README.md','README.en.md','LICENSE','NOTICE.md','THIRD_PART
 $preview = Get-Content -LiteralPath (Join-Path $projectDir 'qa/fixture.html') -Encoding utf8 -Raw
 $logo = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $projectDir 'extension/icons/48.png')))
 $preview = $preview.Replace('<title>', ('<meta name="miorning-logo" content="data:image/png;base64,' + $logo + '"><title>'))
-$runtime = @('store.js','shell.js','references.js','content.js') | ForEach-Object { '<script>' + [Environment]::NewLine + (Get-Content -LiteralPath (Join-Path $projectDir ('extension/' + $_)) -Encoding utf8 -Raw) + [Environment]::NewLine + '</script>' }
+$dockLogo = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $projectDir 'extension/icons/128.png')))
+$preview = $preview.Replace('<title>', ('<meta name="miorning-dock-logo" content="data:image/png;base64,' + $dockLogo + '"><title>'))
+$preview = $preview.Replace('<title>', '<meta name="miorning-options" content="extension/options.html"><title>')
+$runtime = @('control.js','store.js','shell.js','references.js','menus.js','dock.js','content.js') | ForEach-Object { '<script>' + [Environment]::NewLine + (Get-Content -LiteralPath (Join-Path $projectDir ('extension/' + $_)) -Encoding utf8 -Raw) + [Environment]::NewLine + '</script>' }
 $preview = $preview.Replace('</html>', (($runtime -join [Environment]::NewLine) + '</html>'))
 [IO.File]::WriteAllText((Join-Path $staging 'preview.html'), $preview, [Text.UTF8Encoding]::new($false))
 $installer = Join-Path $dist ($name + '.zip')
 Compress-Archive -LiteralPath $staging -DestinationPath $installer -Force
 $covers = Join-Path $projectDir 'covers'
 $archives = @($installer)
-if (Test-Path -LiteralPath $covers) {
+if (!$SkipCovers -and (Test-Path -LiteralPath $covers)) {
   $coverZip = Join-Path $dist ($name + '-covers.zip')
   Compress-Archive -LiteralPath (Get-ChildItem -LiteralPath $covers -File).FullName -DestinationPath $coverZip -Force
   $archives += $coverZip

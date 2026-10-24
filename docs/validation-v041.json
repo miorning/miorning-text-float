@@ -1,0 +1,783 @@
+{
+  "version": "0.4.1",
+  "createdAt": "2026-10-24T06:40:07.3757773Z",
+  "scope": "Isolated DOM fixtures and production-manifest MV3; live signed-in LibTV inspection timed out; no media generation.",
+  "beforeFix": {
+    "detectionSource": "v0.4.0 menus.js",
+    "expectedFailures": 3,
+    "evidence": {
+      "version": "0.4.1",
+      "mode": "Isolated browser DOM fixtures; real top-layer hit tests, no live account mutations",
+      "tests": [
+        {
+          "name": "classless text-only div rows are clickable above the floating editor without cloning",
+          "status": "passed"
+        },
+        {
+          "name": "CSS background thumbnails do not require img elements or ARIA",
+          "status": "passed"
+        },
+        {
+          "name": "one text-only default-cursor result still appears above editor",
+          "status": "passed"
+        },
+        {
+          "name": "overflow and transform on the active canvas ancestors cannot clip the native list",
+          "status": "passed"
+        },
+        {
+          "name": "LibTV known panel mounts above its relative parent popover without keyboard or input events",
+          "status": "passed"
+        },
+        {
+          "name": "native @ button opens a classless body portal without an editor input event",
+          "status": "passed"
+        },
+        {
+          "name": "LibTV explicit reference panel in a body portal does not require native input events",
+          "status": "passed"
+        },
+        {
+          "name": "native editor DOM rebuild with trailing @ discovers the late body portal",
+          "status": "passed"
+        },
+        {
+          "name": "controlled native auto popover opened before editor is moved above it and keeps native identity",
+          "status": "passed"
+        },
+        {
+          "name": "native popover opened after editor remains visible and host can close it",
+          "status": "passed"
+        },
+        {
+          "name": "unknown preexisting panels and unrelated normal menus are left untouched",
+          "status": "passed"
+        },
+        {
+          "name": "unknown panel appearing outside @ context stays untouched after later @",
+          "status": "passed"
+        },
+        {
+          "name": "existing compact canvas title inside the active node never becomes a mention popup",
+          "status": "failed",
+          "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'manual' !== null\n\n    at <workspace>\\qa\\v040-menus.cjs:32:473\n    at async test (<workspace>\\qa\\v040-menus.cjs:17:34)\n    at async <workspace>\\qa\\v040-menus.cjs:32:2"
+        },
+        {
+          "name": "new horizontal title and action strip during @ is not a reference list",
+          "status": "failed",
+          "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'manual' !== null\n\n    at <workspace>\\qa\\v040-menus.cjs:33:342\n    at async test (<workspace>\\qa\\v040-menus.cjs:17:34)\n    at async <workspace>\\qa\\v040-menus.cjs:33:2"
+        },
+        {
+          "name": "existing title beyond initial bounded scan is not promoted by a status text mutation",
+          "status": "failed",
+          "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n'manual' !== null\n\n    at <workspace>\\qa\\v040-menus.cjs:34:513\n    at async test (<workspace>\\qa\\v040-menus.cjs:17:34)\n    at async <workspace>\\qa\\v040-menus.cjs:34:2"
+        },
+        {
+          "name": "nearby toast created during @ is not treated as a reference picker",
+          "status": "passed"
+        },
+        {
+          "name": "distant notifications and inactive canvas image cards are never raised",
+          "status": "passed"
+        },
+        {
+          "name": "pre-mounted hidden classless popup becomes visible by style change",
+          "status": "passed"
+        },
+        {
+          "name": "known hidden suggestion popup may be a full-width block before native positioning",
+          "status": "passed"
+        },
+        {
+          "name": "characterData change reveals rows inside an existing blank portal",
+          "status": "passed"
+        },
+        {
+          "name": "host hiding a popup is respected without re-opening it on layout refresh",
+          "status": "passed"
+        },
+        {
+          "name": "host new position is retained on disposal while temporary styles are removed",
+          "status": "passed"
+        },
+        {
+          "name": "repeated layout updates restore original inset longhands exactly",
+          "status": "passed"
+        },
+        {
+          "name": "native dismissal is not undone by later content mutations or destroy",
+          "status": "passed"
+        },
+        {
+          "name": "a hidden ancestor also withdraws a managed popup",
+          "status": "passed"
+        },
+        {
+          "name": "removing the native popup and destroying the coordinator disconnects observers",
+          "status": "passed"
+        },
+        {
+          "name": "IME composition does not promote unrelated compact panels",
+          "status": "passed"
+        },
+        {
+          "name": "large canvas changes are bounded and idle popup does not run a style/animation-frame loop",
+          "status": "passed"
+        }
+      ],
+      "pageErrors": [],
+      "performance": {
+        "canvasNodes": 10000,
+        "popupStyleReads": 53,
+        "idleStyleReads": 0
+      },
+      "passed": 25,
+      "failed": 3
+    }
+  },
+  "menus": {
+    "version": "0.4.1",
+    "mode": "Isolated browser DOM fixtures; real top-layer hit tests, no live account mutations",
+    "tests": [
+      {
+        "name": "classless text-only div rows are clickable above the floating editor without cloning",
+        "status": "passed"
+      },
+      {
+        "name": "CSS background thumbnails do not require img elements or ARIA",
+        "status": "passed"
+      },
+      {
+        "name": "one text-only default-cursor result still appears above editor",
+        "status": "passed"
+      },
+      {
+        "name": "overflow and transform on the active canvas ancestors cannot clip the native list",
+        "status": "passed"
+      },
+      {
+        "name": "LibTV known panel mounts above its relative parent popover without keyboard or input events",
+        "status": "passed"
+      },
+      {
+        "name": "native @ button opens a classless body portal without an editor input event",
+        "status": "passed"
+      },
+      {
+        "name": "LibTV explicit reference panel in a body portal does not require native input events",
+        "status": "passed"
+      },
+      {
+        "name": "explicit native reference panel inside a toolbar retains its native popup pathway",
+        "status": "passed"
+      },
+      {
+        "name": "ARIA controlled native popup inside a toolbar remains above the editor",
+        "status": "passed"
+      },
+      {
+        "name": "native editor DOM rebuild with trailing @ discovers the late body portal",
+        "status": "passed"
+      },
+      {
+        "name": "controlled native auto popover opened before editor is moved above it and keeps native identity",
+        "status": "passed"
+      },
+      {
+        "name": "native popover opened after editor remains visible and host can close it",
+        "status": "passed"
+      },
+      {
+        "name": "unknown preexisting panels and unrelated normal menus are left untouched",
+        "status": "passed"
+      },
+      {
+        "name": "unknown panel appearing outside @ context stays untouched after later @",
+        "status": "passed"
+      },
+      {
+        "name": "existing compact canvas title inside the active node never becomes a mention popup",
+        "status": "passed"
+      },
+      {
+        "name": "new horizontal title and action strip during @ is not a reference list",
+        "status": "passed"
+      },
+      {
+        "name": "clear then refill an established title in one mutation batch cannot impersonate an empty portal",
+        "status": "passed"
+      },
+      {
+        "name": "clear then refill a late-DOM title across observer deliveries also stays unchanged",
+        "status": "passed"
+      },
+      {
+        "name": "existing title beyond initial bounded scan is not promoted by a status text mutation",
+        "status": "passed"
+      },
+      {
+        "name": "a real reference named exactly like the project title remains selectable",
+        "status": "passed"
+      },
+      {
+        "name": "project title stays at the page edge while the actual reference list is above editor",
+        "status": "passed"
+      },
+      {
+        "name": "nearby toast created during @ is not treated as a reference picker",
+        "status": "passed"
+      },
+      {
+        "name": "distant notifications and inactive canvas image cards are never raised",
+        "status": "passed"
+      },
+      {
+        "name": "pre-mounted hidden classless popup becomes visible by style change",
+        "status": "passed"
+      },
+      {
+        "name": "known hidden suggestion popup may be a full-width block before native positioning",
+        "status": "passed"
+      },
+      {
+        "name": "characterData change reveals rows inside an existing blank portal",
+        "status": "passed"
+      },
+      {
+        "name": "childList insertion fills an existing empty unlabelled portal with native rows",
+        "status": "passed"
+      },
+      {
+        "name": "a vertical text-only list inside a plain wrapper is preserved",
+        "status": "passed"
+      },
+      {
+        "name": "unlabelled thumbnail grid remains selectable without accepting a text action toolbar",
+        "status": "passed"
+      },
+      {
+        "name": "host hiding a popup is respected without re-opening it on layout refresh",
+        "status": "passed"
+      },
+      {
+        "name": "host new position is retained on disposal while temporary styles are removed",
+        "status": "passed"
+      },
+      {
+        "name": "repeated layout updates restore original inset longhands exactly",
+        "status": "passed"
+      },
+      {
+        "name": "native dismissal is not undone by later content mutations or destroy",
+        "status": "passed"
+      },
+      {
+        "name": "a hidden ancestor also withdraws a managed popup",
+        "status": "passed"
+      },
+      {
+        "name": "removing the native popup and destroying the coordinator disconnects observers",
+        "status": "passed"
+      },
+      {
+        "name": "IME composition does not promote unrelated compact panels",
+        "status": "passed"
+      },
+      {
+        "name": "large canvas changes are bounded and idle popup does not run a style/animation-frame loop",
+        "status": "passed"
+      }
+    ],
+    "pageErrors": [],
+    "performance": {
+      "canvasNodes": 10000,
+      "popupStyleReads": 65,
+      "idleStyleReads": 0
+    },
+    "passed": 37,
+    "failed": 0
+  },
+  "integration": {
+    "version": "0.4.1",
+    "mode": "Isolated Chromium; synthetic platform origins and local DOM fixtures only",
+    "tests": [
+      {
+        "name": "empty first edit is saved version 1; later edits fork version 2",
+        "status": "passed"
+      },
+      {
+        "name": "Enter and former Ctrl+Enter cannot trigger the platform generation shortcut",
+        "status": "passed"
+      },
+      {
+        "name": "IME Escape is ignored; normal Escape confirms",
+        "status": "passed"
+      },
+      {
+        "name": "removed name-retention control stays absent even with a legacy enabled preference",
+        "status": "passed"
+      },
+      {
+        "name": "Alt+K saves current text, pauses opening, and resumes through the same shortcut",
+        "status": "passed"
+      },
+      {
+        "name": "global shortcut ignores ongoing IME composition",
+        "status": "passed"
+      },
+      {
+        "name": "role-free portal suggestion is above the floating editor and clickable",
+        "status": "passed"
+      },
+      {
+        "name": "existing hidden menu exposed by style change is promoted; Escape saves once",
+        "status": "passed"
+      },
+      {
+        "name": "unlabelled image popup is promoted only during an @ query; canvas cards stay untouched",
+        "status": "passed"
+      },
+      {
+        "name": "pre-existing unrelated image listbox is never moved by opening or typing @",
+        "status": "passed"
+      },
+      {
+        "name": "LibTV rebuilt canvas title and save toolbar stay in place while native @ selection works",
+        "status": "passed"
+      },
+      {
+        "name": "already-open controlled native popover moves above the editor without replacing its element",
+        "status": "passed"
+      },
+      {
+        "name": "unlabelled popup inside the active Svelte canvas node is supported",
+        "status": "passed"
+      },
+      {
+        "name": "theme colors and 64px font apply to the actual editor and persist",
+        "status": "passed"
+      },
+      {
+        "name": "font slider Escape closes only transient controls, next Escape confirms",
+        "status": "passed"
+      },
+      {
+        "name": "clearing this site closes an active editor without resurrecting queued drafts or altering website text",
+        "status": "passed"
+      },
+      {
+        "name": "generic editor and native rich text preserved on www.liblib.tv",
+        "status": "passed"
+      },
+      {
+        "name": "generic editor and native rich text preserved on www.updream.ai",
+        "status": "passed"
+      },
+      {
+        "name": "generic editor and native rich text preserved on jimeng.jianying.com",
+        "status": "passed"
+      },
+      {
+        "name": "generic editor and native rich text preserved on app.pixmax.cn",
+        "status": "passed"
+      },
+      {
+        "name": "generic editor and native rich text preserved on console.pixmax.ai",
+        "status": "passed"
+      }
+    ],
+    "pageErrors": [],
+    "passed": 21,
+    "failed": 0
+  },
+  "regression": {
+    "startedAt": "2026-10-24T06:38:44.944Z",
+    "mode": "isolated headless Chromium, local fixture only; actual extension source injected",
+    "browser": "msedge.exe",
+    "tests": [
+      {
+        "name": "click opens original textarea; confirmation closes and restores style",
+        "status": "passed",
+        "milliseconds": 939
+      },
+      {
+        "name": "two Enter newlines and Esc commit survive refresh",
+        "status": "passed",
+        "milliseconds": 505
+      },
+      {
+        "name": "Ctrl+Enter no longer confirms the floating editor",
+        "status": "passed",
+        "milliseconds": 445
+      },
+      {
+        "name": "font controls clamp 14–64 and preserve native textarea caret",
+        "status": "passed",
+        "milliseconds": 425
+      },
+      {
+        "name": "removed keep-text control is absent and theme control retains editor selection",
+        "status": "passed",
+        "milliseconds": 361
+      },
+      {
+        "name": "title drag and keyboard movement retain bounds",
+        "status": "passed",
+        "milliseconds": 1213
+      },
+      {
+        "name": "all eight resize handles independently move correct edges",
+        "status": "passed",
+        "milliseconds": 4063,
+        "details": [
+          {
+            "direction": "n",
+            "width": 760,
+            "height": 540
+          },
+          {
+            "direction": "ne",
+            "width": 780,
+            "height": 540
+          },
+          {
+            "direction": "e",
+            "width": 780,
+            "height": 520
+          },
+          {
+            "direction": "se",
+            "width": 780,
+            "height": 540
+          },
+          {
+            "direction": "s",
+            "width": 760,
+            "height": 540
+          },
+          {
+            "direction": "sw",
+            "width": 780,
+            "height": 540
+          },
+          {
+            "direction": "w",
+            "width": 780,
+            "height": 520
+          },
+          {
+            "direction": "nw",
+            "width": 780,
+            "height": 540
+          }
+        ]
+      },
+      {
+        "name": "resize keyboard and minimum geometry",
+        "status": "passed",
+        "milliseconds": 485
+      },
+      {
+        "name": "contenteditable native Enter produces two visible line breaks",
+        "status": "passed",
+        "milliseconds": 385
+      },
+      {
+        "name": "existing portal @ menu opens above editor and inserts native reference token",
+        "status": "passed",
+        "milliseconds": 658
+      },
+      {
+        "name": "text entered after reference supports native undo without deleting token",
+        "status": "passed",
+        "milliseconds": 578
+      },
+      {
+        "name": "Escape confirms editor even while native reference menu is open",
+        "status": "passed",
+        "milliseconds": 504
+      },
+      {
+        "name": "DOM replacement cleans floating styles and supports new editor",
+        "status": "passed",
+        "milliseconds": 510
+      },
+      {
+        "name": "transformed clipped ancestor does not shrink or clip floating editor",
+        "status": "passed",
+        "milliseconds": 399
+      },
+      {
+        "name": "narrow viewport and reduced motion retain reachable controls",
+        "status": "passed",
+        "milliseconds": 650
+      },
+      {
+        "name": "viewport shrink clamps window and retains usable editor",
+        "status": "passed",
+        "milliseconds": 487
+      },
+      {
+        "name": "composition guard does not close or prevent candidate confirmation",
+        "status": "passed",
+        "milliseconds": 396,
+        "details": "Synthetic composition guard only; actual OS IME remains unverified."
+      },
+      {
+        "name": "toggle pauses and resumes feature without duplicate shell",
+        "status": "passed",
+        "milliseconds": 485
+      },
+      {
+        "name": "complete reference name shows gray suggestion without inserting a token",
+        "status": "passed",
+        "milliseconds": 438
+      },
+      {
+        "name": "Tab replaces complete name with native token by default",
+        "status": "passed",
+        "milliseconds": 414
+      },
+      {
+        "name": "legacy keep-text preference cannot revive removed behavior; Tab replaces name",
+        "status": "passed",
+        "milliseconds": 532
+      },
+      {
+        "name": "Shift+Tab keeps text without accepting name suggestion",
+        "status": "passed",
+        "milliseconds": 453
+      },
+      {
+        "name": "Escape confirms typed name without accepting gray reference suggestion",
+        "status": "passed",
+        "milliseconds": 478
+      },
+      {
+        "name": "continued typing hides name suggestion without changing text",
+        "status": "passed",
+        "milliseconds": 391
+      },
+      {
+        "name": "duplicate connected reference names do not auto-select a candidate",
+        "status": "passed",
+        "milliseconds": 330
+      },
+      {
+        "name": "composition state suppresses name candidate and Tab acceptance",
+        "status": "passed",
+        "milliseconds": 333,
+        "details": "Synthetic composition-state guard; actual operating-system candidate UI unverified."
+      },
+      {
+        "name": "unmatched text leaves native Tab focus navigation intact",
+        "status": "passed",
+        "milliseconds": 363
+      },
+      {
+        "name": "native reference button no-op preserves original name and never calls undo",
+        "status": "passed",
+        "milliseconds": 1610
+      },
+      {
+        "name": "failed name deletion retains original text plus reference without undoing user work",
+        "status": "passed",
+        "milliseconds": 358
+      },
+      {
+        "name": "pending acceptance cannot undo a different focused field",
+        "status": "passed",
+        "milliseconds": 1697
+      },
+      {
+        "name": "closing during pending acceptance waits safely and later Escape preserves text",
+        "status": "passed",
+        "milliseconds": 1708
+      },
+      {
+        "name": "native gray mention suggestion is hidden only inside floating editor",
+        "status": "passed",
+        "milliseconds": 463
+      },
+      {
+        "name": "Tab accepts true reference without counting native gray suggestion as token",
+        "status": "passed",
+        "milliseconds": 340
+      },
+      {
+        "name": "complete name split across adjacent text nodes and inline spans still matches",
+        "status": "passed",
+        "milliseconds": 1132
+      },
+      {
+        "name": "name matching stops at newline and existing noneditable token boundaries",
+        "status": "passed",
+        "milliseconds": 664
+      },
+      {
+        "name": "v0.2 first open immediately preserves original as version 1",
+        "status": "passed",
+        "milliseconds": 509
+      },
+      {
+        "name": "v0.3 empty editor starts first typed content at version 1 and later edits fork version 2",
+        "status": "passed",
+        "milliseconds": 907
+      },
+      {
+        "name": "v0.3 blank rich-text placeholder does not consume version 1",
+        "status": "passed",
+        "milliseconds": 482
+      },
+      {
+        "name": "v0.2 confirmed version 2 persists across reload and preserves version 1",
+        "status": "passed",
+        "milliseconds": 847
+      },
+      {
+        "name": "v0.2 typing and deleting from old version fork without modifying saved versions",
+        "status": "passed",
+        "milliseconds": 1163
+      },
+      {
+        "name": "v0.2 delete version keeps remaining numbers and allocates next number",
+        "status": "passed",
+        "milliseconds": 901
+      },
+      {
+        "name": "v0.2 more than 1000 versions retained and range selects first/middle/last",
+        "status": "passed",
+        "milliseconds": 1454
+      },
+      {
+        "name": "v0.2 histories isolate separate fields and project routes",
+        "status": "passed",
+        "milliseconds": 896
+      },
+      {
+        "name": "window dimensions font and theme persist across refresh",
+        "status": "passed",
+        "milliseconds": 912
+      },
+      {
+        "name": "v0.2 immediate input plus Esc commits latest text without draft race",
+        "status": "passed",
+        "milliseconds": 423
+      },
+      {
+        "name": "v0.2 failed persistence keeps edited text and window open until retry succeeds",
+        "status": "passed",
+        "milliseconds": 651
+      },
+      {
+        "name": "v0.2 rich reference snapshots preserve identity but remove executable attributes",
+        "status": "passed",
+        "milliseconds": 799
+      },
+      {
+        "name": "v0.2 branding link icon warm-red confirmation and narrow accessibility",
+        "status": "passed",
+        "milliseconds": 333
+      },
+      {
+        "name": "name suggestion remains gray and Tab replaces original with native reference",
+        "status": "passed",
+        "milliseconds": 567
+      },
+      {
+        "name": "v0.2 Enter and Tab cannot mutate rich text while confirmation is saving",
+        "status": "passed",
+        "milliseconds": 450
+      },
+      {
+        "name": "v0.2 anonymous equal-label fields retain distinct histories after DOM reordering",
+        "status": "passed",
+        "milliseconds": 664
+      },
+      {
+        "name": "v0.2 noncommitting close draft reopens and confirms without altering earlier draft",
+        "status": "passed",
+        "milliseconds": 652
+      },
+      {
+        "name": "no browser runtime page errors",
+        "status": "passed",
+        "details": []
+      }
+    ],
+    "sourceHashes": {
+      "control.js": "4d755db0f4ffa4a4395b1a902c1c623ab217409c7b26bcb7c153bfdaef8baec6",
+      "store.js": "f4ede9da2ab2c2f745f61defc739a4f26c7e5ff2f03b07541df7ec5ee53077b5",
+      "shell.js": "bf03750c8b4d878e018aa86c2f3d02578ad58538aeb3b0b3817223a399a32a8b",
+      "references.js": "ed6a81516994699a02e8b5149df8650132072da6897aefbbb3fd8482b5e309d8",
+      "menus.js": "59c33ac3f1326851bc2480a740e120fc985581e1020afe1b19308be11390f5ec",
+      "dock.js": "a26fdac3695acb76b78f587761e5dc46160e403d35a30146cb0ea3206f6763f6",
+      "content.js": "a098c2cc60a7bd31af69d27a2221a26ef9beea25f6a2d3ef4b8c1eec6472ba5a",
+      "background.js": "b3f4f6ba80d75b0476458d14d6e7ef5db45d086722e7cfeb7ccd2c65f685ac6b",
+      "manifest.json": "2e4b74ead25e201720e995aeeb894794e40d1cea0e4c23a1ab82df11837d4a4b",
+      "options.js": "7e24ae25a6ac61b6ce7c7fbc08c56ad319a5fe27f8a24ed691cd3050300b9e10",
+      "options.html": "fd71ffab1ee436fa8d82df4a0d4bad5300d03795d800f78881deec8175cc532d",
+      "options.css": "6719cc00e699ee7448f001374022681655a919113e93b7674710780d9bb6f165"
+    },
+    "limitations": [
+      "Real operating-system IME candidate interaction is not automated.",
+      "Fixture contenteditable is not a substitute for live LibTV React integration."
+    ],
+    "browserVersion": "156.0.4314.42",
+    "pageErrors": [],
+    "extensionSmoke": {
+      "status": "passed",
+      "browser": "msedge.exe headless disposable profile",
+      "manifest": "unmodified production manifest",
+      "network": "All external requests blocked; simulated LibTV-origin document fulfilled exclusively from local fixture.",
+      "sourceScripts": "byte-identical to extension source",
+      "checks": [
+        "MV3 content script auto injection",
+        "textarea Enter/Esc",
+        "LibTV aria-placeholder parent popover branch",
+        "no-role native menu selector",
+        "native mention insertion",
+        "native mention text contrast",
+        "real chrome.storage.local version persistence across reload",
+        "real MV3 settings persistence across reload",
+        "extension assets load",
+        "storage failure leaves editor open and preserves text",
+        "storage retry commits latest text",
+        "no website IndexedDB fallback in extension context",
+        "production options global toggle updates existing tab while retaining histories",
+        "shortcut recording, cancel and reset persist in real extension storage",
+        "cache selection requires second confirmation and cancel preserves data",
+        "packaged cat dock loads while paused; old site allowlist and keep-text control removed"
+      ],
+      "serviceWorkers": [
+        "chrome-extension://cjabmopnpedhmfdapnbgofdjmigdebfk/background.js"
+      ]
+    },
+    "siteControlCoverage": "All-site pause/resume and cross-tab shortcut persistence are covered by qa/v040-control.cjs; the old optional-site model is retired.",
+    "sourceDrift": [],
+    "completedAt": "2026-10-24T06:39:52.486Z",
+    "summary": {
+      "passed": 53,
+      "failed": 0
+    }
+  },
+  "static": {
+    "syntaxFiles": 26,
+    "assets": 15,
+    "status": "passed"
+  },
+  "package": {
+    "version": "0.4.1",
+    "scope": "Packaged standalone preview; local isolated browser only",
+    "checks": [
+      "Packaged runtime version matches manifest",
+      "Embedded transparent cat plaque reveals fully on hover and retracts",
+      "Embedded cat logo loads without external files",
+      "Theme and font slider work in bundled preview",
+      "Esc saves multiline text and persisted preferences reopen",
+      "No generation and no browser errors"
+    ],
+    "pageErrors": [],
+    "status": "passed"
+  }
+}

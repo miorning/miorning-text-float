@@ -11,7 +11,7 @@
   <p class="intro">此页只有本地文本和手工绘制的 SVG 参考图，不连接任何生成服务。</p>
   <div class="cards">
     <section class="card"><h2>原生 textarea</h2><label for="fixture-textarea">点击输入框打开文本窗</label><textarea id="fixture-textarea" placeholder="输入多行文字">清晨，镜头缓缓靠近窗边。
-阳光穿过叶片，落在桌上的笔记本。</textarea><small>检查换行、粘贴、撤销与 Ctrl + Enter。此框没有图片引用功能。</small></section>
+阳光穿过叶片，落在桌上的笔记本。</textarea><small>检查换行、粘贴、撤销与 Esc 确认。此框没有图片引用功能。</small></section>
     <section class="card"><h2>原生 contenteditable + @ 图片引用</h2><label for="fixture-rich">输入 @，选择下面两张已连接图片</label><div id="fixture-rich" role="textbox" aria-multiline="true" aria-label="参考图提示词" contenteditable="true" data-placeholder="描述画面，输入 @ 引用图片">在窗边放一盆植物。输入 @ 选择参考图。</div><div class="refs" aria-label="已连接的图片参考"></div><small>引用 token 保留 data-reference-id；选中图片后继续编辑。</small></section>
   </div>
   <section class="node-stage"><h2>带 transform 与 overflow 的画布节点</h2><div class="scaled-node"><textarea id="fixture-transformed" aria-label="缩放节点提示词">这是缩放为 80% 的模拟画布节点。

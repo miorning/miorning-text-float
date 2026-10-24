@@ -4,36 +4,53 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>网站设置 · 喵咛文本窗</title>
+  <title>设置 · 喵咛文本窗</title>
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
   <main>
     <header>
       <a class="brand" href="https://space.bilibili.com/353186187" target="_blank" rel="noopener noreferrer"><img src="icons/48.png" width="48" height="48" alt="喵咛"><span>喵咛文本窗</span></a>
-      <span class="page-tag">网站设置</span>
+      <span class="page-tag">全局设置</span>
     </header>
     <section class="intro">
-      <h1>把大文本窗带到常用网站</h1>
-      <p>添加网站后，点击可编辑文本框即可打开喵咛文本窗。</p>
+      <h1>所有网页，一个开关</h1>
+      <p>点击文本框放大编辑，拖动小喵图标可吸附到屏幕四周。</p>
     </section>
-    <section class="panel" aria-labelledby="add-title">
-      <h2 id="add-title">添加支持的网站</h2>
-      <form id="site-form">
-        <label for="site-url">网站地址</label>
-        <div class="add-row"><input id="site-url" name="url" type="text" inputmode="url" spellcheck="false" autocomplete="url" placeholder="https://example.com/canvas" required aria-describedby="url-help"><button type="submit" id="add-site" class="primary">添加网站</button></div>
-        <p id="url-help" class="hint">仅申请这个网站的访问权限。路径会忽略，同域名下的页面都会启用；子域名需单独添加。</p>
-      </form>
+    <section class="panel" aria-labelledby="global-title">
+      <div class="global-row"><div><h2 id="global-title">全局启用</h2><p id="global-status" role="status">正在读取设置…</p></div><button id="global-toggle" type="button" role="switch" aria-checked="true" aria-label="全局启用喵咛文本窗" disabled><span class="switch-track" aria-hidden="true"></span><span id="global-label">读取中</span></button></div>
+      <p class="hint">默认在所有普通 HTTP / HTTPS 网页开启。暂停或恢复会同步到已打开和之后新开的网页；暂停时，小喵图标会变淡，仍可点击恢复。</p>
+      <p class="hint">浏览器内部页、扩展商店等受保护页面不允许注入。更新插件后请刷新原有网页；浏览器的站点访问限制仍会生效。</p>
       <div id="feedback" role="status" aria-live="polite"></div>
     </section>
-    <section class="panel" aria-labelledby="sites-title">
-      <div class="section-heading"><h2 id="sites-title">支持的网站</h2><button id="refresh" class="quiet" type="button">刷新状态</button></div>
-      <div class="site default-site"><div><strong>LibTV</strong><p>www.liblib.tv · liblib.tv</p></div><span class="badge">默认支持</span></div>
-      <div id="site-list" aria-live="polite"><p class="empty">正在读取网站设置…</p></div>
-      <p class="hint footer-hint">添加、停用或移除后，刷新目标网页生效。停用会保留网址和文本版本；移除还会尝试收回该网站的访问权限。</p>
+    <section id="shortcut" class="panel" aria-labelledby="shortcut-title">
+      <h2 id="shortcut-title">全局开关快捷键</h2>
+      <label for="shortcut-input">暂停 / 恢复所有网页</label>
+      <div class="shortcut-row"><input id="shortcut-input" type="text" readonly value="Alt + K" aria-describedby="shortcut-help"><button id="shortcut-record" type="button">录入快捷键</button><button id="shortcut-reset" class="quiet" type="button">恢复 Alt + K</button></div>
+      <p id="shortcut-help" class="hint">点击录入后，按下新的组合键即可保存；Esc 取消。请使用 Alt、Ctrl 或 ⌘ 搭配字母、数字或 F1–F12。在普通网页获得焦点时触发，一次切换所有网页；不是系统全局热键。系统及浏览器已占用的组合可能无法触发。</p>
+      <div id="shortcut-feedback" class="feedback" role="status" aria-live="polite"></div>
     </section>
-    <footer>通用网站支持普通文本框与可编辑文本区域。图片 @ 引用依赖网站自身结构，LibTV 以外的平台需实际测试。<br>文本版本与窗口设置保存在本机浏览器扩展中。</footer>
+    <section id="cache" class="panel" aria-labelledby="cache-title">
+      <div class="section-heading"><h2 id="cache-title">本地文本缓存</h2><button id="cache-refresh" class="quiet" type="button">查看 / 刷新大小</button></div>
+      <p id="cache-summary" class="cache-summary" role="status">正在统计…</p>
+      <p class="hint">按网站勾选，清空本插件保存的版本与草稿。全局开关、快捷键、图标位置与窗口偏好会保留。平台作品、登录状态和网站本身的缓存不会清理。</p>
+      <div id="cache-list"><p class="empty">正在读取缓存…</p></div>
+      <div class="cache-actions"><button id="cache-select-all" class="quiet" type="button">全选</button><button id="cache-clear" class="danger" type="button" disabled>清空所选网站缓存</button></div>
+      <p class="hint">大小按保存记录的键名与内容以 UTF-8 JSON 字节统计，不包含浏览器数据库的磁盘开销。清空后，已打开的对应文本窗会关闭，网页当前文字保留；再次打开时会重新建立版本。</p>
+      <div id="cache-feedback" class="feedback" role="status" aria-live="polite"></div>
+    </section>
+    <footer>通用网站支持普通文本框与可编辑文本区域。图片 @ 引用仍需网站原生支持，平台更新可能影响适配。<br>文本版本与设置保存在本机浏览器扩展中，不上传提示词。</footer>
   </main>
+  <dialog id="cache-confirm" aria-labelledby="cache-confirm-title" aria-describedby="cache-confirm-description">
+    <h2 id="cache-confirm-title">确认清空所选网站缓存？</h2>
+    <p id="cache-confirm-description">以下网站在喵咛文本窗保存的全部版本与草稿将永久删除，无法撤销。</p>
+    <ul id="cache-confirm-sites"></ul>
+    <p class="hint">只删除所选网站的本插件文本缓存，保留全局设置与窗口偏好。</p>
+    <div id="cache-confirm-feedback" class="feedback error" role="alert"></div>
+    <div class="dialog-actions"><button id="cache-cancel" type="button" autofocus>取消</button><button id="cache-confirm-clear" class="danger" type="button">确认永久清空</button></div>
+  </dialog>
+  <script src="control.js"></script>
+  <script src="store.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

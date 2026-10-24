@@ -1,36 +1,19 @@
 # 隐私与权限 / Privacy and permissions
 
-## 保存什么 / Stored data
-
-插件在当前浏览器配置的本机扩展存储中保存文本版本、草稿、窗口设置与网站列表。不跨设备同步。历史包含文本及已有引用的标识和显示信息，不上传或复制参考图片文件。
-
-The extension stores text versions, drafts, window settings, and website lists locally in the current browser profile. It does not sync across devices. History includes text plus existing reference identifiers and display information, without uploading or copying reference image files.
-
-本地体验页使用单独的 IndexedDB，与已安装扩展的数据分开。 / The local preview uses separate IndexedDB storage, independent from the installed extension.
-
-## 网络与原网页 / Network and the original website
-
-没有遥测、文本上传、Cookie 读取或生成 API。编辑直接作用于原输入框，会触发原网站自身的事件和保存行为；该网站仍受其隐私政策约束。
-
-There is no telemetry, text-upload service, cookie access, or generation API. Editing acts on the original field and triggers the website’s own events and saving behavior; the website remains governed by its own privacy policy.
-
-点击作者链接会打开 B站；已有参考图片的显示遵循原网页与浏览器的正常网络行为。 / The creator link opens Bilibili. Displaying existing reference images follows the page’s and browser’s normal network behavior.
+- 本插件默认在普通 HTTP / HTTPS 网页运行，点击文本区域才展开编辑；浏览器仍控制实际的网站访问权限。 / The extension runs on ordinary HTTP / HTTPS pages and expands clicked editable fields; browser site-access controls still apply.
+- 文本版本、草稿、窗口偏好、图标位置、快捷键及全局开关保存在本机扩展存储。没有分析统计、提示词上传或生成 API。 / Versions, drafts, preferences, dock position, shortcuts, and the global switch stay in local extension storage. No analytics, prompt-upload service, or generation API.
+- 直接编辑原输入框，原网站可能按自己的机制保存输入。本插件不代替网站的隐私政策。 / The original field is edited directly; the website may save edits through its own mechanisms.
+- 本地 preview.html 使用本地浏览器存储用于演示；正式扩展存储失败时不会改用网站存储。 / The standalone preview uses browser-local storage. The installed extension never falls back to website storage on failure.
+- 暂停会关闭文本窗并停止新窗口自动展开，保留文字及历史，猫咪图标继续提供恢复入口。 / Pausing closes the floating editor and prevents new openings while preserving text and history; the cat remains available to resume.
+- 清空缓存只删除二次确认中所选网站的本插件文本版本与草稿。全局开关、快捷键、窗口及图标偏好保留；网站作品、登录信息和网站本身缓存不会清理。 / Confirmed cache clearing deletes only selected sites' extension versions and drafts, preserving preferences and website data.
+- 缓存大小是记录键名与内容的 UTF-8 JSON 字节数，不等于磁盘占用。 / Cache size measures serialized UTF-8 JSON data, not physical disk use.
 
 ## 权限 / Permissions
 
-| 权限 / Permission | 用途 / Purpose |
-| --- | --- |
-| `storage`, `unlimitedStorage` | 本机历史、设置和网站列表；无人工版本数量上限 / Local history, settings, and sites; no artificial version-count limit |
-| `activeTab`, `scripting` | 当前页启用与获准网站的脚本加载 / Current-page activation and injection on approved sites |
-| LibTV 网站访问 / LibTV site access | 默认文本窗适配 / Default editor integration |
-| 可选 HTTP / HTTPS 网站访问 / Optional HTTP / HTTPS access | 仅在添加具体网站时申请相应权限 / Requested for a specific website when you add it |
+`storage` / `unlimitedStorage`：保存本机历史与设置，无人工版本数量上限，仍受设备容量限制。 / Store local versions and preferences, limited by device capacity.
 
-可选域权限的声明允许申请其他网站，不表示首次安装就已取得所有网站的访问权限。 / Declaring optional host permissions allows later requests; it does not grant access to every website on installation.
+`scripting` 与 HTTP / HTTPS 网站访问：在普通网页放置编辑窗及吸边图标，升级时清理旧站点注册并加载新脚本。 / Inject the editor and dock, and migrate old site registrations.
 
-## 删除与保留 / Deletion and retention
+`activeTab`：用户主动通过浏览器工具栏访问时可提供当前页扩展能力。 / Support user-initiated toolbar access.
 
-可以逐个删除文本版本。移除网站会撤销该站访问并保留其版本；卸载扩展或清除扩展存储会删除本机记录。删除原画布参考节点后，恢复历史不会重建节点或连线。
-
-You can delete individual text versions. Removing a site revokes its access while retaining its history. Uninstalling the extension or clearing its storage deletes local records. Restoring history cannot recreate deleted canvas nodes or connections.
-
-设备存储有限；保存失败时插件会提示，确认流程保持窗口打开以便重试。 / Device storage is finite. Save failures are reported, and confirmation keeps the window open for retry.
+不读取浏览器历史、Cookie、密码或凭证。受保护页面不注入；嵌入式特殊编辑器可能不兼容。 / No browser-history, cookie, password, or credential APIs. Protected pages are excluded; special embedded editors may remain incompatible.

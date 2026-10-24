@@ -10,7 +10,8 @@ const manifest = JSON.parse(fs.readFileSync(path.join(extension, 'manifest.json'
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.equal(manifest.manifest_version, 3);
 assert.equal(manifest.version, packageJson.version, 'Package and manifest versions must match');
-assert.deepEqual(manifest.content_scripts[0].js, ['store.js', 'shell.js', 'references.js', 'content.js']);
+assert.deepEqual(manifest.content_scripts[0].js, ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'content.js']);
+assert.deepEqual(manifest.content_scripts[0].matches, ['http://*/*', 'https://*/*']);
 const assets = new Set([manifest.background.service_worker, manifest.options_ui.page, ...Object.values(manifest.icons), ...Object.values(manifest.action.default_icon)]);
 for (const item of manifest.content_scripts) for (const file of [...(item.js || []), ...(item.css || [])]) assets.add(file);
 for (const group of manifest.web_accessible_resources || []) for (const file of group.resources) assets.add(file);

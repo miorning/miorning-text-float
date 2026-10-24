@@ -1,6 +1,6 @@
 {
   "name": "miorning-text-float",
-  "version": "0.2.0",
+  "version": "0.4.1",
   "private": true,
   "description": "A floating text editor browser extension with version history and native image references.",
   "license": "GPL-3.0-or-later",
@@ -10,9 +10,19 @@
   "scripts": {
     "check": "node scripts/check.cjs",
     "test": "npm run test:unit",
-    "test:unit": "node qa/store-unit.cjs && node qa/sites-unit.cjs",
+    "test:unit": "node qa/store-unit.cjs && node qa/v040-control.cjs --unit-only",
     "test:browser": "node qa/run.cjs",
-    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/package.ps1"
+    "package": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/package.ps1",
+    "package:extension": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/package.ps1 -SkipCovers",
+    "test:shell": "node qa/v030-shell.cjs",
+    "test:references": "node qa/v030-references.cjs",
+    "test:cache": "node qa/v030-cache.cjs",
+    "test:integration": "node qa/v030-integration.cjs",
+    "test:package": "node qa/v030-package.cjs",
+    "test:control": "node qa/v040-control.cjs",
+    "test:dock": "node qa/v040-dock.cjs",
+    "test:menus": "node qa/v040-menus.cjs",
+    "test:lifecycle": "node qa/v040-lifecycle.cjs"
   },
   "devDependencies": {
     "playwright": "1.62.1"

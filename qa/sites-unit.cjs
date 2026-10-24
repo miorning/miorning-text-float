@@ -42,7 +42,7 @@ const chrome = {
     unregisterContentScripts({ids}, callback) { reply('unregisterContentScripts', callback, undefined, () => ids.forEach(id => registered.delete(id))); }
   }
 };
-const context = vm.createContext({chrome, crypto, URL, console, Uint8Array});
+const context = vm.createContext({chrome, crypto, URL, console, Uint8Array, TextEncoder});
 context.importScripts = name => vm.runInContext(sources[name], context);
 vm.runInContext(sources['background.js'], context);
 const send = (op, payload = {}) => new Promise((resolve, reject) => {
@@ -58,13 +58,24 @@ async function test(name, fn) { await fn(); passed++; }
   await test('empty state preserves built in LibTV defaults', async () => {
     const state = await send('list');
     assert.equal(state.sites.length, 0);
-    assert.deepEqual(state.defaults, ['https://www.liblib.tv', 'https://liblib.tv']);
+    assert.deepEqual(state.defaults, ['https://www.liblib.tv', 'https://liblib.tv', 'https://www.updream.ai', 'https://jimeng.jianying.com', 'https://app.pixmax.cn', 'https://console.pixmax.ai']);
+    const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, '../extension/manifest.json'), 'utf8'));
+    assert.deepEqual(manifest.content_scripts[0].matches, state.defaults.map(origin => `${origin}/*`));
+    for (const origin of state.defaults) await assert.rejects(send('add', {origin}), /默认支持/);
     await assert.rejects(send('add', {origin: 'https://www.liblib.tv/canvas'}), /默认支持/);
   });
   await test('ungranted origin is never saved or injected', async () => {
     await assert.rejects(send('add', {origin: 'https://canvas.example/page'}), /尚未授权/);
     assert.equal(registered.size, 0);
     assert.equal((await send('list')).sites.length, 0);
+  });
+  await test('custom origins promoted to defaults do not remain broken duplicate entries', async () => {
+    storage['miorning-text-float:v2:sites'] = [{origin: 'https://app.pixmax.cn', enabled: true}];
+    const state = await send('list');
+    assert.equal(state.sites.length, 0);
+    assert.equal(registered.size, 0);
+    assert.equal(storage['miorning-text-float:v2:sites'][0].origin, 'https://app.pixmax.cn');
+    delete storage['miorning-text-float:v2:sites'];
   });
   await test('specific authorized URL normalizes origin and registers four files', async () => {
     granted.add('https://canvas.example/*');

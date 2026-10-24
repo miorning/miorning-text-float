@@ -8,10 +8,12 @@ const { chromium } = require('playwright');
 const { artifacts, browserOptions, browserLabel, sanitize, writeReport, temporaryDirectory, removeTemporary } = require('./runtime.cjs');
 
 const qa = __dirname, extension = path.resolve(qa, '../extension');
+const manifest = JSON.parse(fs.readFileSync(path.join(extension, 'manifest.json'), 'utf8'));
+const contentScripts = [...new Set(manifest.content_scripts.flatMap(entry => entry.js || []))];
 const launchOptions = browserOptions(chromium);
 const extensionLaunchOptions = browserOptions(chromium, true);
 const report = { startedAt: new Date().toISOString(), mode: 'isolated headless Chromium, local fixture only; actual extension source injected', browser: browserLabel(launchOptions), tests: [], sourceHashes: {}, limitations: ['Real operating-system IME candidate interaction is not automated.', 'Fixture contenteditable is not a substitute for live LibTV React integration.'] };
-for (const name of ['store.js', 'shell.js', 'references.js', 'content.js', 'background.js', 'manifest.json', 'options.js', 'options.html']) if (fs.existsSync(path.join(extension,name))) report.sourceHashes[name] = crypto.createHash('sha256').update(fs.readFileSync(path.join(extension, name))).digest('hex');
+for (const name of [...contentScripts, 'background.js', 'manifest.json', 'options.js', 'options.html', 'options.css']) report.sourceHashes[name] = crypto.createHash('sha256').update(fs.readFileSync(path.join(extension, name))).digest('hex');
 const server = http.createServer((req, res) => {
   if (req.url?.startsWith('/fixture.html')) { res.setHeader('Content-Type', 'text/html; charset=utf-8'); res.end(fs.readFileSync(path.join(qa, 'fixture.html'))); }
   else if (/^\/icons\/(?:icon-)?\d+\.png$/.test(req.url || '') && fs.existsSync(path.join(extension, req.url))) { res.setHeader('Content-Type','image/png'); res.end(fs.readFileSync(path.join(extension, req.url))); }
@@ -25,7 +27,8 @@ async function inject() {
   // Resolve packaged images against the local server without pretending the page
   // is an extension context; runtime.id deliberately remains absent.
   await page.evaluate(() => {globalThis.chrome ||= {}; chrome.runtime ||= {}; chrome.runtime.getURL = resource => location.origin + '/' + resource;});
-  for (const name of ['store.js', 'shell.js', 'references.js', 'content.js']) if (fs.existsSync(path.join(extension,name))) await page.addScriptTag({ path: path.join(extension, name) });
+  for (const name of contentScripts) await page.addScriptTag({ path: path.join(extension, name) });
+  await page.evaluate(() => MiorningTextFloat.whenIdle());
 }
 async function reset({ width = 1280, height = 900, reducedMotion = 'no-preference', libtv = false } = {}) {
   await page.setViewportSize({ width, height });
@@ -42,7 +45,7 @@ const state = () => page.evaluate(() => globalThis.MiorningTextFloat.getState())
 async function waitOpen() { await page.waitForFunction(() => globalThis.MiorningTextFloat?.getState().open); await settle(); }
 async function waitClosed() { await page.waitForFunction(() => globalThis.MiorningTextFloat && !MiorningTextFloat.getState().open); await settle(); }
 async function open(selector = '#fixture-textarea') { await page.locator(selector).click(); await waitOpen(); assert.equal((await state()).open, true); }
-async function close() { await page.keyboard.press('Control+Enter'); await waitClosed(); assert.equal((await state()).open, false); }
+async function close() { await page.keyboard.press('Escape'); await waitClosed(); assert.equal((await state()).open, false); }
 async function test(name, fn) {
   const start = Date.now();
   try { const details = await fn(); report.tests.push({ name, status: 'passed', milliseconds: Date.now() - start, ...(details ? { details } : {}) }); console.log('PASS ' + name); }
@@ -73,14 +76,14 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     assert.equal(await page.locator('.miorning-text-float-shell').count(), 1);
     const accessibility = await page.locator('body').ariaSnapshot();
     assert.ok(accessibility.includes('喵咛文本窗'), 'Floating dialog is present in body accessibility tree');
-    assert.ok(accessibility.includes('保留原文字'), 'Toolbar checkbox is present in body accessibility tree');
+    assert.ok(!accessibility.includes('保留原文字'), 'Removed keep-text control must not remain in accessibility tree');
     assert.ok(accessibility.includes('确认'), 'Confirmation control is present in body accessibility tree');
     await page.locator('.confirm').click(); await waitClosed();
     assert.equal((await state()).open, false);
     const restored = await page.evaluate(() => ({ style: savedEditor.getAttribute('style'), original: savedStyle, popover: savedEditor.getAttribute('popover'), focused: document.activeElement === savedEditor, focus: document.activeElement?.outerHTML.slice(0,200) }));
     assert.equal((restored.style || '') === (restored.original || '') && restored.popover === null && restored.focused, true, JSON.stringify(restored));
   });
-  await test('two Enter newlines and Ctrl+Enter commit survive refresh', async () => {
+  await test('two Enter newlines and Esc commit survive refresh', async () => {
     await reset(); await open(); await page.keyboard.press('Control+A'); await page.keyboard.insertText('第一行');
     await page.keyboard.press('Enter'); await page.keyboard.press('Enter'); await page.keyboard.insertText('最后一行 🌿');
     assert.equal(await page.locator('#fixture-textarea').inputValue(), '第一行\n\n最后一行 🌿');
@@ -88,7 +91,16 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     assert.equal(await page.locator('#fixture-textarea').inputValue(), '第一行\n\n最后一行 🌿');
     assert.equal(await page.evaluate(() => fixtureState().counts.generation), 0);
   });
-  await test('font controls clamp 14–32 and preserve native textarea caret', async () => {
+  await test('Ctrl+Enter no longer confirms the floating editor', async () => {
+    await reset(); await open(); await page.keyboard.press('Control+A'); await page.keyboard.insertText('仍在编辑');
+    await page.keyboard.press('Control+Enter'); await settle();
+    assert.equal((await state()).open, true);
+    assert.equal(await page.locator('#fixture-textarea').inputValue(), '仍在编辑');
+    await close(); await page.reload();
+    assert.equal(await page.locator('#fixture-textarea').inputValue(), '仍在编辑');
+    assert.equal(await page.evaluate(() => fixtureState().counts.generation), 0);
+  });
+  await test('font controls clamp 14–64 and preserve native textarea caret', async () => {
     await reset(); await open();
     await page.evaluate(() => { const el = document.querySelector('#fixture-textarea'); el.setSelectionRange(4, 4); }); await settle();
     await page.getByRole('button', { name: '增大字体' }).click();
@@ -96,14 +108,14 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     assert.equal(await page.locator('#fixture-textarea').evaluate(el => getComputedStyle(el).fontSize), '19px');
     assert.equal(await page.locator('#fixture-textarea').evaluate(el => el.selectionStart), 4);
     const font = page.getByRole('spinbutton', { name: '字体大小' });
-    await font.fill('100'); await font.press('Enter'); assert.equal((await state()).fontSize, 32);
+    await font.fill('100'); await font.press('Enter'); assert.equal((await state()).fontSize, 64);
     await font.fill('2'); await font.press('Enter'); assert.equal((await state()).fontSize, 14);
   });
-  await test('keep-original-text defaults off and checkbox retains editor selection', async () => {
+  await test('removed keep-text control is absent and theme control retains editor selection', async () => {
     await reset(); await open('#fixture-rich');
-    const option = page.getByRole('checkbox', { name: '保留原文字' }); assert.equal(await option.isChecked(), false);
+    assert.equal(await page.getByRole('checkbox', { name: '保留原文字' }).count(), 0);
     await page.evaluate(() => { const el = document.querySelector('#fixture-rich'); const range = document.createRange(); range.setStart(el.firstChild,3); range.collapse(true); const s = getSelection(); s.removeAllRanges(); s.addRange(range); });
-    await option.click(); assert.equal(await option.isChecked(), true);
+    await page.getByRole('button', { name: '夜间模式', exact: true }).click();
     const preserved = await page.evaluate(() => ({ focused: document.activeElement.id, offset: getSelection().anchorOffset }));
     assert.equal(preserved.focused, 'fixture-rich'); assert.equal(preserved.offset, 3);
   });
@@ -150,11 +162,11 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     await page.waitForFunction(() => document.querySelector('.fixture-mentions').matches(':popover-open'));
     const button = page.locator('.fixture-mentions button').nth(1);
     await button.click(); await settle();
-    assert.equal(await page.locator('#fixture-rich [data-reference-id="green-plant"]').count(), 1);
+    await page.locator('#fixture-rich [data-reference-id="green-plant"]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-reference-id="green-plant"]').count(), 1);
     assert.equal(await page.evaluate(() => savedRich === document.querySelector('#fixture-rich')), true);
     assert.equal(await page.evaluate(() => fixtureState().counts.reference), 1);
     assert.equal(await page.locator('.fixture-mentions').evaluate(el => el.hidden && !el.matches(':popover-open') && !el.hasAttribute('popover')), true);
-    await close(); await page.reload(); assert.equal(await page.locator('#fixture-rich [data-reference-id="green-plant"]').count(), 1);
+    await close(); await page.reload(); await page.locator('#fixture-rich [data-reference-id="green-plant"]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-reference-id="green-plant"]').count(), 1);
   });
   await test('text entered after reference supports native undo without deleting token', async () => {
     await reset(); await open('#fixture-rich'); await page.keyboard.press('Control+End'); await page.keyboard.insertText(' @'); await settle();
@@ -163,13 +175,15 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     assert.ok((await page.locator('#fixture-rich').innerText()).includes('后续文字UNDO'));
     await page.keyboard.press('Control+z');
     assert.ok(!(await page.locator('#fixture-rich').innerText()).includes('后续文字UNDO'));
-    assert.equal(await page.locator('#fixture-rich [data-reference-id]').count(), 1);
+    await page.locator('#fixture-rich [data-reference-id]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-reference-id]').count(), 1);
   });
-  await test('Escape closes after native menu has been dismissed', async () => {
+  await test('Escape confirms editor even while native reference menu is open', async () => {
     await reset(); await open('#fixture-rich'); await page.keyboard.press('Control+End'); await page.keyboard.insertText(' @'); await settle();
-    await page.keyboard.press('Escape'); await settle(); assert.equal((await state()).open, true);
-    assert.equal(await page.locator('.fixture-mentions').evaluate(el => el.hidden), true);
-    await page.keyboard.press('Escape'); await settle(); assert.equal((await state()).open, false);
+    const before = await page.locator('#fixture-rich').innerText();
+    await page.keyboard.press('Escape'); await waitClosed(); assert.equal((await state()).open, false);
+    assert.equal(await page.locator('#fixture-rich [data-reference-id]').count(), 0);
+    assert.equal(await page.locator('.fixture-mentions').evaluate(el => !el.matches(':popover-open')), true);
+    await page.reload(); assert.equal(await page.locator('#fixture-rich').innerText(), before);
   });
   await test('DOM replacement cleans floating styles and supports new editor', async () => {
     await reset(); await open('#fixture-rich'); await page.evaluate(() => document.querySelector('#replace').click()); await settle();
@@ -199,10 +213,10 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     const during = await page.locator('#fixture-textarea').evaluate(el => {
       el.dispatchEvent(new CompositionEvent('compositionstart', { bubbles: true, data: '' }));
       const candidate = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, isComposing: true }); el.dispatchEvent(candidate);
-      const confirm = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true, bubbles: true, cancelable: true, isComposing: true }); el.dispatchEvent(confirm);
-      return { candidatePrevented: candidate.defaultPrevented, open: MiorningTextFloat.getState().open };
+      const confirm = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true, isComposing: true }); el.dispatchEvent(confirm);
+      return { candidatePrevented: candidate.defaultPrevented, confirmPrevented: confirm.defaultPrevented, open: MiorningTextFloat.getState().open };
     });
-    assert.equal(during.candidatePrevented, false); assert.equal(during.open, true);
+    assert.equal(during.candidatePrevented, false); assert.equal(during.confirmPrevented, false); assert.equal(during.open, true);
     await page.locator('#fixture-textarea').evaluate(el => el.dispatchEvent(new CompositionEvent('compositionend', { bubbles: true, data: '中文' }))); await close();
     return 'Synthetic composition guard only; actual OS IME remains unverified.';
   });
@@ -226,24 +240,27 @@ async function cleanup() { try { await context?.close(); await browser?.close();
   });
   await test('Tab replaces complete name with native token by default', async () => {
     await reset(); await open('#fixture-rich'); await typeName(); await page.keyboard.press('Tab'); await settle();
-    assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
+    await page.locator('#fixture-rich [data-mention-node-id="window-light"]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
     assert.equal(await plainTextOutsideTokens(),''); assert.equal(await suggestionOpen(),false);
     assert.equal(await page.evaluate(()=>fixtureState().counts.reference),1);
   });
-  await test('keep-original checkbox preserves name and adds native token on Tab', async () => {
-    await reset(); await open('#fixture-rich'); await typeName(); await page.getByRole('checkbox',{name:'保留原文字'}).click(); await settle();
+  await test('legacy keep-text preference cannot revive removed behavior; Tab replaces name', async () => {
+    await reset(); await page.evaluate(() => MiorningTextFloatStore.saveSettings({keepText: true}));
+    await open('#fixture-rich'); await typeName(); await settle();
     assert.equal(await suggestionOpen(),true); await page.keyboard.press('Tab'); await settle();
-    assert.equal(await plainTextOutsideTokens(),firstName);
-    assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
-    await page.screenshot({path:path.join(artifacts,'name-kept-reference.png')});
+    assert.equal(await plainTextOutsideTokens(),'');
+    await page.locator('#fixture-rich [data-mention-node-id="window-light"]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
+    await page.screenshot({path:path.join(artifacts,'name-replaced-reference.png')});
   });
   await test('Shift+Tab keeps text without accepting name suggestion', async () => {
     await reset(); await open('#fixture-rich'); await typeName(); await page.keyboard.press('Shift+Tab'); await settle();
     assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),0); assert.equal(await plainTextOutsideTokens(),firstName);
   });
-  await test('Escape dismisses name suggestion while keeping editor open', async () => {
-    await reset(); await open('#fixture-rich'); await typeName(); await page.keyboard.press('Escape'); await settle();
-    assert.equal(await suggestionOpen(),false); assert.equal((await state()).open,true); assert.equal(await plainTextOutsideTokens(),firstName);
+  await test('Escape confirms typed name without accepting gray reference suggestion', async () => {
+    await reset(); await open('#fixture-rich'); await typeName(); await page.keyboard.press('Escape'); await waitClosed();
+    assert.equal(await page.locator('.miorning-reference-suggestion').count(),0); assert.equal((await state()).open,false);
+    assert.equal(await plainTextOutsideTokens(),firstName); assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),0);
+    await page.reload(); assert.equal(await plainTextOutsideTokens(),firstName);
   });
   await test('continued typing hides name suggestion without changing text', async () => {
     await reset(); await open('#fixture-rich'); await typeName(); await page.keyboard.insertText('继续描述'); await settle();
@@ -281,7 +298,7 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     await reset(); await open('#fixture-rich'); await typeName();
     await page.evaluate(()=>{const command=document.execCommand.bind(document);globalThis.undoCount=0;document.execCommand=(name,...args)=>{if(name==='delete')return false;if(name==='undo')undoCount++;return command(name,...args);};});
     await page.keyboard.press('Tab'); await settle(); assert.equal(await plainTextOutsideTokens(),firstName);
-    assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),1); assert.equal(await page.evaluate(()=>undoCount),0);
+    await page.locator('#fixture-rich [data-mention-node-id]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),1); assert.equal(await page.evaluate(()=>undoCount),0);
   });
   await test('pending acceptance cannot undo a different focused field', async () => {
     await reset(); await open('#fixture-rich'); await typeName();
@@ -292,16 +309,22 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     });
     await settle(); assert.ok((await page.locator('#fixture-textarea').inputValue()).endsWith('外部输入安全')); assert.equal(await plainTextOutsideTokens(),firstName);
   });
-  await test('closing during pending acceptance cancels callback and preserves text', async () => {
+  await test('closing during pending acceptance waits safely and later Escape preserves text', async () => {
     await reset(); await open('#fixture-rich'); await typeName();
-    await page.evaluate(()=>{
+    const closed = await page.evaluate(async()=>{
       document.querySelector('.refs [data-insert-reference]').addEventListener('click',event=>event.stopImmediatePropagation());
       document.querySelector('#fixture-rich').dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));
-      MiorningTextFloat.close();
+      const result=await MiorningTextFloat.close();
       const other=document.querySelector('#fixture-textarea');other.focus();other.setSelectionRange(other.value.length,other.value.length);document.execCommand('insertText',false,'关闭后安全');
+      return result;
     });
-    await settle(); assert.equal((await state()).open,false); assert.equal(await page.locator('.miorning-reference-suggestion').count(),0);
+    assert.equal(closed,false);assert.equal((await state()).open,true,'Pending native reference must not be saved halfway through insertion');
+    await settle();
     assert.equal(await plainTextOutsideTokens(),firstName); assert.ok((await page.locator('#fixture-textarea').inputValue()).endsWith('关闭后安全'));
+    assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),0);
+    await page.locator('#fixture-rich').focus();await close();
+    assert.equal((await state()).open,false);assert.equal(await page.locator('.miorning-reference-suggestion').count(),0);
+    assert.equal(await plainTextOutsideTokens(),firstName);
   });
   await test('native gray mention suggestion is hidden only inside floating editor', async () => {
     await reset({libtv:true}); await open('#fixture-rich'); await typeName();
@@ -316,7 +339,7 @@ async function cleanup() { try { await context?.close(); await browser?.close();
   await test('Tab accepts true reference without counting native gray suggestion as token', async () => {
     await reset({libtv:true}); await open('#fixture-rich'); await typeName();
     await page.keyboard.press('Tab'); await settle();
-    assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
+    await page.locator('#fixture-rich [data-mention-node-id="window-light"]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-mention-node-id="window-light"]').count(),1);
     assert.equal(await plainTextOutsideTokens(),'');
     assert.ok(!(await page.evaluate(()=>fixtureState().rich)).includes('data-mention-suggest'));
   });
@@ -329,7 +352,7 @@ async function cleanup() { try { await context?.close(); await browser?.close();
         const r=document.createRange();r.setStart(last,last.textContent.length);r.collapse(true);const s=getSelection();s.removeAllRanges();s.addRange(r);el.dispatchEvent(new InputEvent('input',{bubbles:true,inputType:'insertText'}));
       },{name:firstName,inline});
       await settle();assert.equal(await suggestionOpen(),true);await page.keyboard.press('Tab');await settle();
-      assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),1);assert.equal(await plainTextOutsideTokens(),'');
+      await page.locator('#fixture-rich [data-mention-node-id]').waitFor({state:'attached'}); assert.equal(await page.locator('#fixture-rich [data-mention-node-id]').count(),1);assert.equal(await plainTextOutsideTokens(),'');
     }
   });
   await test('name matching stops at newline and existing noneditable token boundaries', async () => {
@@ -358,10 +381,11 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     const extensionPage = await extensionContext.newPage();
     await extensionPage.route('**/*', route => route.request().url().startsWith('chrome-extension://') ? route.continue() : route.request().url().startsWith('https://www.liblib.tv/') ? route.fulfill({contentType:'text/html; charset=utf-8',body:fs.readFileSync(path.join(qa,'fixture.html'),'utf8')}) : route.abort());
     await extensionPage.goto('https://www.liblib.tv/miorning-local-fixture?libtv=1');
+    await extensionPage.locator('.miorning-text-float-dock').waitFor({ state: 'visible' });
     await extensionPage.locator('#fixture-textarea').click();
     await extensionPage.locator('.miorning-text-float-shell').waitFor({ state: 'visible', timeout: 8000 });
     extensionLoaded = true;
-    await extensionPage.keyboard.press('Control+A'); await extensionPage.keyboard.insertText('真实 MV3 注入验证'); await extensionPage.keyboard.press('Enter'); await extensionPage.keyboard.insertText('第二行'); await extensionPage.keyboard.press('Control+Enter');
+    await extensionPage.keyboard.press('Control+A'); await extensionPage.keyboard.insertText('真实 MV3 注入验证'); await extensionPage.keyboard.press('Enter'); await extensionPage.keyboard.insertText('第二行'); await extensionPage.keyboard.press('Escape');
     await extensionPage.locator('.miorning-text-float-shell').waitFor({state:'detached'});
     assert.equal(await extensionPage.locator('.miorning-text-float-shell').count(), 0);
     assert.equal(await extensionPage.locator('#fixture-textarea').inputValue(), '真实 MV3 注入验证\n第二行');
@@ -374,23 +398,24 @@ async function cleanup() { try { await context?.close(); await browser?.close();
     const nativeStyle = await extensionPage.locator('#fixture-rich .mention-badge').evaluate(el=>({color:getComputedStyle(el).color,border:getComputedStyle(el).borderTopColor}));
     assert.equal(nativeStyle.color,'rgb(40, 51, 47)');
     await extensionPage.screenshot({ path: path.join(artifacts, 'mv3-native-reference.png') });
-    await extensionPage.keyboard.press('Control+Enter');
+    await extensionPage.keyboard.press('Escape');
     await extensionPage.locator('.miorning-text-float-shell').waitFor({state:'detached'});
     assert.equal(await extensionPage.locator('.miorning-text-float-shell').count(),0);
     await extensionPage.screenshot({ path: path.join(artifacts, 'mv3-fixture.png') });
     const persistence = await require('./v020-mv3.cjs')({context:extensionContext,page:extensionPage,qa,assert});
-    report.extensionSmoke = { status: 'passed', browser: browserLabel(extensionLaunchOptions) + ' headless disposable profile', manifest: 'unmodified production manifest', network:'All external requests blocked; simulated LibTV-origin document fulfilled exclusively from local fixture.', sourceScripts: 'byte-identical to extension source', checks:['MV3 content script auto injection','textarea Enter/Ctrl+Enter','LibTV aria-placeholder parent popover branch','no-role native menu selector','native mention insertion','native mention text contrast', ...persistence],serviceWorkers: extensionContext.serviceWorkers().map(worker => worker.url()) };
+    report.extensionSmoke = { status: 'passed', browser: browserLabel(extensionLaunchOptions) + ' headless disposable profile', manifest: 'unmodified production manifest', network:'All external requests blocked; simulated LibTV-origin document fulfilled exclusively from local fixture.', sourceScripts: 'byte-identical to extension source', checks:['MV3 content script auto injection','textarea Enter/Esc','LibTV aria-placeholder parent popover branch','no-role native menu selector','native mention insertion','native mention text contrast', ...persistence],serviceWorkers: extensionContext.serviceWorkers().map(worker => worker.url()) };
   } catch (error) { report.extensionSmoke = { status: extensionLoaded ? 'failed' : 'unverified', reason: sanitize(error.message) }; }
   finally {
     await extensionContext?.close();
     try { removeTemporary(extensionProfile); } catch(error) { report.profileCleanup = sanitize(error.message); }
   }
 
-  report.preAuthorizedSitesSmoke = await require('./v020-sites-mv3.cjs')({chromium,qa,extension,assert,launchOptions:extensionLaunchOptions});
+  report.siteControlCoverage = 'All-site pause/resume and cross-tab shortcut persistence are covered by qa/v040-control.cjs; the old optional-site model is retired.';
+  report.sourceDrift = Object.entries(report.sourceHashes).filter(([name, expected]) => crypto.createHash('sha256').update(fs.readFileSync(path.join(extension, name))).digest('hex') !== expected).map(([name]) => name);
   report.completedAt = new Date().toISOString();
-  report.summary = { passed: report.tests.filter(x => x.status === 'passed').length, failed: report.tests.filter(x => x.status === 'failed').length + (report.extensionSmoke?.status !== 'passed' ? 1 : 0) + (report.preAuthorizedSitesSmoke?.status !== 'passed' ? 1 : 0) + (report.profileCleanup ? 1 : 0) };
+  report.summary = { passed: report.tests.filter(x => x.status === 'passed').length, failed: report.tests.filter(x => x.status === 'failed').length + (report.extensionSmoke?.status !== 'passed' ? 1 : 0) + (report.profileCleanup ? 1 : 0) + (report.sourceDrift.length ? 1 : 0) };
   writeReport(report);
-  console.log(JSON.stringify({ summary: report.summary, extensionSmoke: report.extensionSmoke, preAuthorizedSitesSmoke: report.preAuthorizedSitesSmoke }));
+  console.log(JSON.stringify({ summary: report.summary, extensionSmoke: report.extensionSmoke }));
   await cleanup();
   process.exitCode = report.summary.failed ? 1 : 0;
 })().catch(async error => { report.fatal = sanitize(error.stack); writeReport(report); console.error(sanitize(error.stack)); await cleanup(); process.exitCode = 1; });

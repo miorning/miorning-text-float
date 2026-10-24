@@ -1,25 +1,12 @@
-# v0.2.0 · 喵咛文本窗 / Miorning Text Float
+# 喵咛文本窗 v0.4.1 · Miorning Text Float
 
-## 中文
+- 修复 LibTV 输入 `@` 时标题栏被误抬成常驻横条，保留原生引用列表置顶。 / Fixed persistent title strips triggered by `@`; native reference menus stay above the editor.
+- 举牌猫吸边、悬停展开；Alt + K 全站暂停/恢复，可自定义。 / Edge-docked cat with hover reveal and customizable Alt + K global toggle.
+- Esc 确认、14–64 字号、日夜模式、本地版本与按站清缓存。 / Esc confirmation, 14–64 font sizes, light/dark mode, local versions, and per-site cache clearing.
+- 移除“保留原文字”；修正空白框首版编号。 / Removed name retention and fixed first-version numbering for empty fields.
 
-将网页小文本框展开成可拖动、可缩放的大窗口，支持字号与窗口设置记忆、本机版本与草稿、旧版分叉、删除和滑块选版。LibTV 沿用原生 `@` 引用，完整图名显示灰色提示，按 `Tab` 插入，可保留原文字。设置中可添加其他网站；配有黑猫 Logo、B站入口和暖红确认按钮。
+**安装 / Install:** 解压后加载 `extension` 文件夹。更新请覆盖原安装目录、重新加载扩展并刷新网页，不要卸载或清空历史。 / Load the extracted `extension` folder. To update, replace files in the existing directory, reload the extension, and refresh pages; keep your installation and history.
 
-安装：解压插件包，在 Chrome / Edge 开发者模式中加载 `extension`。`Enter` 换行，`Ctrl + Enter` 确认；不会启动媒体生成。添加网站后需授权并刷新。
+附安装包与 SHA-256 校验文件，完整源码采用 GPL-3.0-or-later。 / Installer and SHA-256 checksums included; complete source under GPL-3.0-or-later.
 
-验证：50 项浏览器、19 项存储、14 项网站设置检查通过。已登录 LibTV 的完整联合流程、真实中文输入法、首次授权弹窗仍需手动验证；其他网站的专有引用不保证适配。详见 [测试范围](docs/VALIDATION.md)。
-
-## English
-
-Expand small web fields into a movable, resizable editor with remembered settings, local versions and drafts, immutable older versions, deletion, and slider navigation. Native LibTV `@` references support gray exact-name suggestions accepted with `Tab`, with optional name retention. Add websites in Settings; includes the black-cat logo, Bilibili link, and warm-red confirm button.
-
-Install: extract the extension package and load `extension` in Chrome / Edge Developer mode. `Enter` adds a newline; `Ctrl + Enter` confirms without starting media generation. Grant permission and refresh after adding a site. The UI is currently Chinese.
-
-Validation: 50 browser, 19 storage, and 14 website-setting checks passed. Full signed-in LibTV integration, real Chinese IME behavior, and first-time permission prompts need manual verification; other sites’ proprietary references are not guaranteed. See [Validation](docs/VALIDATION.md).
-
-## 附件 / Assets
-
-- `MiorningTextFloat-v0.2.0.zip` — 插件与源码 / extension and source.
-- `MiorningTextFloat-v0.2.0-covers.zip` — 三款六张封面与中文文案 / three cover concepts in two formats, with Chinese copy.
-- `SHA256SUMS.txt` — 文件校验 / file checksums.
-
-GPL-3.0-or-later。封面为 AI 营销示意，非实际界面。 / Covers are AI-generated promotional illustrations, not actual UI.
+菜单 37、编辑流程 21、主回归 53 项通过；实站边界见[验证记录](docs/VALIDATION.md)。 / 37 menu, 21 integration, and 53 regression checks passed; see [validation limits](docs/VALIDATION.md).

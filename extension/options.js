@@ -1,127 +1,156 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 (() => {
   'use strict';
-  const MESSAGE = 'MIORNING_TEXT_FLOAT_SITES_V1';
-  const form = document.getElementById('site-form');
-  const input = document.getElementById('site-url');
-  const list = document.getElementById('site-list');
   const feedback = document.getElementById('feedback');
-  let busy = false;
+  const cacheList = document.getElementById('cache-list');
+  const cacheFeedback = document.getElementById('cache-feedback');
+  const cacheDialog = document.getElementById('cache-confirm');
+  const cacheClear = document.getElementById('cache-clear');
+  const shortcutInput = document.getElementById('shortcut-input');
+  const shortcutFeedback = document.getElementById('shortcut-feedback');
+  const recordButton = document.getElementById('shortcut-record');
+  const store = globalThis.MiorningTextFloatStore;
+  const control = globalThis.MiorningTextFloatControl;
+  let clearSelection = [], cacheSites = [], state = null;
+  let busy = false, recording = false;
+  const defaultShortcut = {code: 'KeyK', alt: true, ctrl: false, shift: false, meta: false};
 
-  function say(message, error = false) {
-    feedback.textContent = message;
-    feedback.classList.toggle('error', error);
-    feedback.setAttribute('role', error ? 'alert' : 'status');
+  function say(message, error = false, target = feedback) {
+    target.textContent = message;
+    target.classList.toggle('error', error);
+    target.setAttribute('role', error ? 'alert' : 'status');
   }
-
   function setBusy(value) {
     busy = value;
     document.querySelectorAll('button').forEach(button => { button.disabled = value; });
-    input.disabled = value;
+    document.getElementById('global-toggle').disabled = value || !state;
+    cacheList.querySelectorAll('input').forEach(checkbox => { checkbox.disabled = value; });
+    updateCacheActions();
   }
-
-  function originFromInput(value) {
-    if (!value.trim() || value.includes('*')) throw new Error('请输入具体网站地址，不支持通配符。');
-    let url;
-    try { url = new URL(value.trim().includes('://') ? value.trim() : `https://${value.trim()}`); }
-    catch { throw new Error('网址格式无效，请输入完整的 http 或 https 地址。'); }
-    if (!['http:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password) throw new Error('只支持不含账号密码的 http 或 https 网站地址。');
-    if (['https://www.liblib.tv', 'https://liblib.tv'].includes(url.origin)) throw new Error('LibTV 已默认支持，无需重复添加。');
-    return url.origin;
+  function render(next) {
+    if (state && next.revision < state.revision) return;
+    state = next;
+    const toggle = document.getElementById('global-toggle');
+    toggle.setAttribute('aria-checked', String(state.enabled));
+    toggle.disabled = busy;
+    document.getElementById('global-label').textContent = state.enabled ? '已开启' : '已暂停';
+    document.getElementById('global-status').textContent = state.enabled ? '点击网页文本框，即可打开喵咛文本窗。' : '所有网页已暂停；小喵图标与恢复快捷键仍可用。';
+    if (!recording) shortcutInput.value = control.formatShortcut(state.shortcut);
   }
-
-  function send(op, payload = {}) {
-    return new Promise((resolve, reject) => {
-      try {
-        chrome.runtime.sendMessage({type: MESSAGE, op, payload}, response => {
-          if (chrome.runtime.lastError) reject(new Error(chrome.runtime.lastError.message));
-          else if (!response?.ok) reject(new Error(response?.error || '设置未保存，请重试。'));
-          else resolve(response.value);
-        });
-      } catch (error) { reject(error); }
-    });
+  function stopRecording(message = '') {
+    recording = false; recordButton.textContent = '录入快捷键';
+    recordButton.setAttribute('aria-pressed', 'false');
+    shortcutInput.classList.remove('recording');
+    shortcutInput.value = state ? control.formatShortcut(state.shortcut) : 'Alt + K';
+    if (message) say(message, false, shortcutFeedback);
   }
-
-  // Call directly from the click/submit handler, before any asynchronous work,
-  // so the browser receives the actual user's authorization gesture.
-  function requestPermission(origin) {
-    return new Promise((resolve, reject) => {
-      try {
-        chrome.permissions.request({origins: [`${origin}/*`]}, granted => {
-          if (chrome.runtime.lastError) reject(new Error(chrome.runtime.lastError.message));
-          else if (!granted) reject(new Error('未获得网站访问权限，网站未启用。你可以稍后重试。'));
-          else resolve();
-        });
-      } catch (error) { reject(error); }
-    });
-  }
-
-  function render(state) {
-    list.replaceChildren();
-    if (!state.sites.length) {
-      const empty = document.createElement('p');
-      empty.className = 'empty';
-      empty.textContent = '还没有添加其他网站。';
-      list.append(empty);
-    }
-    for (const site of state.sites) {
-      const row = document.createElement('div'); row.className = 'site';
-      const info = document.createElement('div');
-      const name = document.createElement('strong'); name.textContent = site.origin;
-      const status = document.createElement('p');
-      status.textContent = !site.granted ? '访问权限已撤销 · 需重新授权' : !site.enabled ? '已停用' : site.registered ? '已启用 · 刷新网页生效' : '未成功启用 · 点击重新授权重试';
-      info.append(name, status);
-      const actions = document.createElement('div'); actions.className = 'site-actions';
-      const toggle = document.createElement('button'); toggle.type = 'button';
-      toggle.textContent = !site.granted || (site.enabled && !site.registered) ? '重新授权' : site.enabled ? '停用' : '启用';
-      toggle.setAttribute('aria-label', `${toggle.textContent} ${site.origin}`);
-      toggle.addEventListener('click', () => {
-        if (busy) return;
-        const enable = !site.enabled || !site.granted || !site.registered;
-        const permission = enable ? requestPermission(site.origin) : Promise.resolve();
-        run(async () => {
-          await permission;
-          return send('setEnabled', {origin: site.origin, enabled: enable});
-        }, `${site.origin} 已${enable ? '启用' : '停用'}。请刷新目标网页。`);
-      });
-      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'remove'; remove.textContent = '移除';
-      remove.setAttribute('aria-label', `移除 ${site.origin}`);
-      remove.addEventListener('click', () => run(() => send('remove', {origin: site.origin}), '网站已移除，文本版本仍保留。请刷新目标网页。'));
-      actions.append(toggle, remove); row.append(info, actions); list.append(row);
-    }
-  }
-
-  async function run(task, success = '') {
+  async function runControl(task, success = '', target = feedback) {
     if (busy) return;
     setBusy(true);
-    try {
-      const state = await task();
-      render(state);
-      if (state.warning) say(state.warning, true);
-      else if (success) say(success);
-    } catch (error) {
-      say(error.message || '网站设置操作失败，请重试。', true);
-      try { render(await send('list')); } catch { /* Preserve the original failure. */ }
-    } finally { setBusy(false); }
+    try { render(await task()); if (success) say(success, false, target); }
+    catch (error) { say(error.message || '设置未保存，请重试。', true, target); }
+    finally { setBusy(false); }
   }
-
-  form.addEventListener('submit', event => {
-    event.preventDefault();
+  document.getElementById('global-toggle').addEventListener('click', () => runControl(() => control.toggle(), '全局状态已同步。'));
+  recordButton.addEventListener('click', () => {
     if (busy) return;
-    let origin;
-    try { origin = originFromInput(input.value); }
-    catch (error) { say(error.message, true); input.focus(); return; }
-    const permission = requestPermission(origin);
-    run(async () => {
-      await permission;
-      const state = await send('add', {origin});
-      input.value = '';
-      return state;
-    }, `${origin} 已添加。刷新目标网页后，点击文本框即可使用。`);
+    if (recording) { stopRecording('已取消，原快捷键保持不变。'); return; }
+    recording = true; recordButton.textContent = '取消录入'; recordButton.setAttribute('aria-pressed', 'true');
+    shortcutInput.value = '请按下组合键…'; shortcutInput.classList.add('recording'); shortcutInput.focus();
+    say('现在按下新快捷键；Esc 取消。', false, shortcutFeedback);
   });
-  document.getElementById('refresh').addEventListener('click', () => run(() => send('list'), '已刷新网站状态。'));
-  window.addEventListener('focus', () => { if (!busy) run(() => send('list')); });
-  chrome.permissions.onRemoved.addListener(() => { if (!busy) run(() => send('list')); });
-  chrome.permissions.onAdded.addListener(() => { if (!busy) run(() => send('list')); });
-  run(() => send('list'));
+  shortcutInput.addEventListener('keydown', event => {
+    if (!recording) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    if (event.key === 'Escape') { stopRecording('已取消，原快捷键保持不变。'); recordButton.focus(); return; }
+    if (['Alt', 'Control', 'Meta', 'Shift'].includes(event.key)) return;
+    let shortcut;
+    try { shortcut = control.shortcutFromEvent(event); }
+    catch (error) { say(error.message, true, shortcutFeedback); return; }
+    stopRecording();
+    runControl(() => control.saveShortcut(shortcut), `已保存 ${control.formatShortcut(shortcut)}，所有网页同步生效。`, shortcutFeedback);
+  });
+  shortcutInput.addEventListener('blur', event => { if (recording && event.relatedTarget !== recordButton) stopRecording('已取消，原快捷键保持不变。'); });
+  document.getElementById('shortcut-reset').addEventListener('click', () => { stopRecording(); runControl(() => control.saveShortcut(defaultShortcut), '已恢复 Alt + K。', shortcutFeedback); });
+  document.addEventListener('keydown', event => {
+    if (recording || busy || cacheDialog.open || !state || !control.matchesShortcut(event, state.shortcut)) return;
+    event.preventDefault(); event.stopImmediatePropagation();
+    runControl(() => control.toggle(), '全局状态已同步。');
+  });
+  window.addEventListener('blur', () => { if (recording) stopRecording('已取消，原快捷键保持不变。'); });
+  control.subscribe(render);
+
+  function formatBytes(value) {
+    if (value < 1024) return `${value} B`;
+    if (value < 1024 * 1024) return `${(value / 1024).toFixed(1)} KiB`;
+    return `${(value / 1024 / 1024).toFixed(2)} MiB`;
+  }
+  const siteLabel = origin => origin === 'legacy-unclassified' ? '旧版未分类文本记录' : origin === 'local-preview' ? '本地预览页' : origin;
+  const selectedOrigins = () => [...cacheList.querySelectorAll('input:checked')].map(input => input.value);
+  function updateCacheActions() {
+    cacheClear.disabled = busy || !selectedOrigins().length;
+    document.getElementById('cache-select-all').disabled = busy || !cacheSites.length;
+  }
+  function cacheSay(message, error = false) {
+    say(message, error, cacheFeedback);
+    document.getElementById('cache-confirm-feedback').textContent = cacheDialog.open && error ? message : '';
+  }
+  async function refreshCache() {
+    const selected = new Set(selectedOrigins());
+    const usage = await store.cacheUsage();
+    cacheSites = usage.sites;
+    document.getElementById('cache-summary').textContent = `版本与草稿：${formatBytes(usage.historyBytes)} · ${cacheSites.length} 个网站；偏好与管理数据：${formatBytes(usage.preferencesBytes)}`;
+    cacheList.replaceChildren();
+    if (!cacheSites.length) {
+      const empty = document.createElement('p'); empty.className = 'empty'; empty.textContent = '还没有文本版本缓存。'; cacheList.append(empty);
+    }
+    for (const site of cacheSites) {
+      const row = document.createElement('label'); row.className = 'cache-site';
+      const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.value = site.origin; checkbox.checked = selected.has(site.origin); checkbox.disabled = busy;
+      checkbox.setAttribute('aria-label', `选择 ${siteLabel(site.origin)} 的缓存`);
+      checkbox.addEventListener('change', updateCacheActions);
+      const info = document.createElement('span');
+      const name = document.createElement('strong'); name.textContent = siteLabel(site.origin);
+      const detail = document.createElement('small'); detail.textContent = `${site.documents} 个文本框 · ${site.versions} 个版本（含 ${site.drafts} 个草稿）`;
+      info.append(name, detail);
+      const size = document.createElement('span'); size.className = 'cache-size'; size.textContent = formatBytes(site.bytes);
+      row.append(checkbox, info, size); cacheList.append(row);
+    }
+    updateCacheActions();
+  }
+  async function runCache(task) {
+    if (busy) return;
+    setBusy(true);
+    try { await task(); }
+    catch (error) { cacheSay(error.message || '缓存操作失败，请重试。', true); }
+    finally { setBusy(false); }
+  }
+  document.getElementById('cache-refresh').addEventListener('click', () => runCache(async () => { await refreshCache(); cacheSay('已刷新本地文本缓存大小。'); }));
+  document.getElementById('cache-select-all').addEventListener('click', () => {
+    const boxes = [...cacheList.querySelectorAll('input')], select = boxes.some(box => !box.checked);
+    boxes.forEach(box => { box.checked = select; }); updateCacheActions();
+  });
+  cacheClear.addEventListener('click', () => {
+    if (busy || !selectedOrigins().length) return;
+    clearSelection = selectedOrigins();
+    document.getElementById('cache-confirm-feedback').textContent = '';
+    const sites = document.getElementById('cache-confirm-sites'); sites.replaceChildren();
+    for (const origin of clearSelection) { const item = document.createElement('li'); item.textContent = siteLabel(origin); sites.append(item); }
+    cacheDialog.showModal(); document.getElementById('cache-cancel').focus();
+  });
+  document.getElementById('cache-cancel').addEventListener('click', () => cacheDialog.close());
+  cacheDialog.addEventListener('cancel', event => { if (busy) event.preventDefault(); });
+  document.getElementById('cache-confirm-clear').addEventListener('click', () => runCache(async () => {
+    if (!cacheDialog.open || !clearSelection.length) return;
+    const result = await store.clearCache([...clearSelection]);
+    cacheDialog.close(); clearSelection = [];
+    await refreshCache(); cacheSay(`已清空 ${result.origins.length} 个网站的文本缓存，移除 ${result.removedDocuments} 份文本框记录。`);
+  }));
+  function revealSection() {
+    const id = location.hash.slice(1);
+    if (['shortcut', 'cache'].includes(id)) document.getElementById(id).scrollIntoView({block: 'start'});
+  }
+  window.addEventListener('hashchange', revealSection);
+  window.addEventListener('focus', () => { if (!busy) control.getState().then(render).catch(error => say(error.message, true)); });
+  runControl(() => control.getState()).then(() => runCache(refreshCache)).then(revealSection);
 })();

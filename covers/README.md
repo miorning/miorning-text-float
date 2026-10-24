@@ -1,5 +1,7 @@
 # 视频封面 / Video covers
 
+封面插画保留 v0.2.0 的历史设计；图内界面仅作示意，当前操作以主 README 为准。配套文字说明已更新至 v0.4.1。 / Cover illustrations retain the v0.2.0 design. Illustrated UI is historical; see the main README for current controls. Companion copy is updated for v0.4.1.
+
 三款、六张原生 PNG，推荐 A 作为插件介绍主封面。  
 Three concepts, six native PNGs. **A** is recommended for the main introduction.
 
