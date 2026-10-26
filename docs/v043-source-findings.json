@@ -1,0 +1,81 @@
+{
+  "research": "Official publicly served static frontend assets; read-only, no authentication, private API, generation, or user browser interaction",
+  "scope": "Current anonymously served bundles. Runtime feature flags and actual signed-in document are not observed.",
+  "conclusion": "Both affected products contain Tiptap/ProseMirror prompt editors with a paragraph-based newline model. TextFloat v0.4.2 bypasses their keymaps and asks execCommand for a BR instead. An unsupported BR can normalize to whitespace; synthetic beforeinput does not invoke their newline commands. The site-supported safe Shift-Enter path splits a paragraph and should be tested against the same minimal schema, undo, mention nodes, and persisted text.",
+  "findings": [
+    {
+      "file": "jimeng-app--300611.7e7e3dd849.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/dreamina/web/jimeng/static/js/async/300611.7e7e3dd849.js",
+      "source_sha256": "0768596fdf3cb991d78b7add4fd683f6999288577358fdb1188e5c127668bdcc",
+      "module_id": 167542,
+      "approx_character_offset": 6125,
+      "finding": "Native Shift-Enter calls Tiptap first(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock). Plain Enter switches between submit and the same paragraph flow according to submitOnModEnter."
+    },
+    {
+      "file": "jimeng-app--301052.c8f77ea6e6.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/dreamina/web/jimeng/static/js/async/301052.c8f77ea6e6.js",
+      "source_sha256": "89d109576500362703d8a9ca605a897661b9515f4aa599b4f868a94292187ce1",
+      "module_id": 372052,
+      "approx_character_offset": 35866,
+      "finding": "ContentGenerator PromptEditor installs Doc, DropCursor, UndoRedo, Paragraph, Text, promptEditorKeyboardShortcuts and supplied feature extensions. The base extension list has no HardBreak. Its update handler persists editor.getJSON()."
+    },
+    {
+      "file": "jimeng-app--681403.42571cd58e.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/dreamina/web/jimeng/static/js/async/681403.42571cd58e.js",
+      "source_sha256": "b2f4b7253a44a0daed20b2a066ecd4c12d255ed537fc5d1de95c4167dc2b01ff",
+      "module_id": 327816,
+      "approx_character_offset": 82303,
+      "finding": "Doc schema content block+; Paragraph module330495 content inline*, parse/render p; Text module22955 inline; module899772 reexports UndoRedo. There is no hard-break node in this base schema."
+    },
+    {
+      "file": "jimeng-app--247490.f4c227759c.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/dreamina/web/jimeng/static/js/async/247490.f4c227759c.js",
+      "source_sha256": "569b802f66578227f1fdce05733d544dafab2c3ec8377d17505fb4492776e6cf",
+      "module_id": null,
+      "approx_character_offset": 159043,
+      "finding": "Bundled ProseMirror beforeinput only has an Android deleteContentBackward workaround. It does not interpret insertLineBreak or insertParagraph input events."
+    },
+    {
+      "file": "jimeng-app--content-generator-feature-loader-5.fe71f4f88e.css",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/dreamina/web/jimeng/static/css/async/content-generator-feature-loader-5.fe71f4f88e.css",
+      "source_sha256": "ecf275b80aa52a27ab2c60ce5efff5a66ba3c49faa2e46ed4a980fc29d7f8b58",
+      "module_id": null,
+      "approx_character_offset": 38698,
+      "finding": "Prompt Tiptap host has white-space:pre-wrap. Several selectors hide ProseMirror-trailingBreak only for empty placeholder paragraphs. This is not evidence of global CSS collapsing supported paragraph breaks."
+    },
+    {
+      "file": "xyq-app--91662.f484a35490.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/pippit/platform_xyq/static/js/async/91662.f484a35490.js",
+      "source_sha256": "bc7789e4f4b6bb8f97424fa51269b72fe15b09a7cede2301fdd4f8510a35b1a6",
+      "module_id": 713515,
+      "approx_character_offset": 11613363,
+      "finding": "CanvasGenerationKeydown config explicitly routes both Enter and Shift-Enter through first(newlineInCode, createParagraphNear, liftEmptyBlock, splitBlock). Ctrl/Meta Enter is separately wired to submit."
+    },
+    {
+      "file": "xyq-app--91662.f484a35490.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/pippit/platform_xyq/static/js/async/91662.f484a35490.js",
+      "source_sha256": "bc7789e4f4b6bb8f97424fa51269b72fe15b09a7cede2301fdd4f8510a35b1a6",
+      "module_id": 713515,
+      "approx_character_offset": 11611763,
+      "finding": "Canvas editor extensions include Doc, Paragraph, Text, UndoRedo, CharacterCount, Placeholder, mention and feature-specific inline nodes, but no HardBreak."
+    },
+    {
+      "file": "xyq-app--561130.af47a6aaf9.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/pippit/platform_xyq/static/js/async/561130.af47a6aaf9.js",
+      "source_sha256": "c532b8a4f071501c9c86379fd70e179602872360dce22bd09b16c9cdd2f37f48",
+      "module_id": 936141,
+      "approx_character_offset": 854682,
+      "finding": "Doc schema content block+; Paragraph module777649 content inline*, parse/render p; Text module689053 inline; module199339 reexports UndoRedo."
+    },
+    {
+      "file": "xyq-app--91662.f484a35490.js",
+      "source_url": "https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/pippit/platform_xyq/static/js/async/91662.f484a35490.js",
+      "source_sha256": "bc7789e4f4b6bb8f97424fa51269b72fe15b09a7cede2301fdd4f8510a35b1a6",
+      "module_id": 878017,
+      "approx_character_offset": 11638433,
+      "finding": "Canvas text serializer uses editor.getText({blockSeparator:\"\\n\"}). Newlines are paragraph boundaries in its durable model."
+    }
+  ],
+  "recommendation": "Prefer the verified site-native Shift-Enter command path or a Tiptap/ProseMirror paragraph transaction. Do not claim literal newline text or BR is a model-compatible fix. Validate native paragraph count, getText block separator, caret, undo, reference identity, close and reopen.",
+  "distribution": "Research snapshots are external public-source material for local diagnosis only. Do not include downloaded site assets or anonymous page snapshots in extension ZIP or GitHub release."
+}

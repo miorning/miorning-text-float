@@ -1,6 +1,6 @@
 {
   "name": "miorning-text-float",
-  "version": "0.4.1",
+  "version": "0.4.4",
   "private": true,
   "description": "A floating text editor browser extension with version history and native image references.",
   "license": "GPL-3.0-or-later",
@@ -22,9 +22,23 @@
     "test:control": "node qa/v040-control.cjs",
     "test:dock": "node qa/v040-dock.cjs",
     "test:menus": "node qa/v040-menus.cjs",
-    "test:lifecycle": "node qa/v040-lifecycle.cjs"
+    "test:lifecycle": "node qa/v040-lifecycle.cjs",
+    "test:editing": "node qa/v042-editing.cjs",
+    "test:interactions": "node qa/v042-interactions.cjs",
+    "test:compat": "node qa/v042-guard-mv3.cjs",
+    "test:prosemirror": "node qa/v043-newlines.cjs",
+    "test:prosemirror-mv3": "node qa/v043-prosemirror-mv3.cjs",
+    "test:hosts": "node qa/v044-hosts.cjs",
+    "test:hosts-mv3": "node qa/v044-hosts-mv3.cjs"
   },
   "devDependencies": {
-    "playwright": "1.62.1"
+    "esbuild": "0.28.2",
+    "playwright": "1.62.1",
+    "prosemirror-commands": "1.7.2",
+    "prosemirror-history": "1.5.1",
+    "prosemirror-keymap": "1.2.3",
+    "prosemirror-model": "1.25.12",
+    "prosemirror-state": "1.4.4",
+    "prosemirror-view": "1.42.8"
   }
 }

@@ -11,7 +11,7 @@ async function start(origin='https://app.pixmax.cn'){
   await context.route('**/*',r=>r.fulfill({status:200,contentType:'text/html; charset=utf-8',body:html}));
   page=await context.newPage();page.on('pageerror',e=>report.pageErrors.push(e.message));
   await page.goto(origin+'/canvas/test');
-  for(const name of ['control.js','store.js','shell.js','references.js','menus.js','dock.js','content.js'])await page.addScriptTag({path:path.join(extension,name)});
+  for(const name of ['control.js','store.js','shell.js','references.js','menus.js','dock.js','editing.js','compat.js','content.js'])await page.addScriptTag({path:path.join(extension,name)});
 }
 async function idle(){await page.evaluate(async()=>{await MiorningTextFloat.whenIdle();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));});}
 async function open(selector='#prompt'){await page.evaluate(()=>MiorningTextFloat.whenIdle());await page.locator(selector).click();await page.waitForFunction(()=>MiorningTextFloat.getState().open);await idle();}

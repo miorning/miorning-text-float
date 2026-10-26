@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later */
 importScripts('store.js', 'control.js');
 
-const SCRIPT_FILES = ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'content.js'];
+const SCRIPT_FILES = ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'editing.js', 'compat.js', 'content.js'];
 function chromeAsync(target, method, ...args) {
   return new Promise((resolve, reject) => {
     try {

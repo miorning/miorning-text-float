@@ -8,3 +8,6 @@ qa/preauthorized-extension-fixture/
 Thumbs.db
 .env
 .env.*
+
+# Local diagnosis only; third-party site bundles are not distributed.
+qa/research-*/

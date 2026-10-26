@@ -8,6 +8,7 @@
 
 - [Playwright](https://github.com/microsoft/playwright)：Apache-2.0，单独安装用于测试，不包含在扩展运行时。 / Apache-2.0; installed separately for testing, not included in the extension runtime.
 - [Node.js](https://nodejs.org/)：单独安装的开发工具，包含自身许可证与第三方声明，不随本项目分发。 / A separately installed development tool with its own license and third-party notices; not redistributed here.
+- [ProseMirror](https://github.com/ProseMirror) 与 [esbuild](https://github.com/evanw/esbuild)：MIT，单独安装用于真实编辑器回归，不包含在插件运行时。 / MIT; separate development dependencies for model-based editor tests, not bundled in the extension runtime.
 - Chrome / Edge / Chromium 测试浏览器不随项目分发。 / Test browsers are not redistributed with this project.
 
 ## 品牌与图片 / Branding and images

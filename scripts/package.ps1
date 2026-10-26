@@ -26,7 +26,7 @@ $preview = $preview.Replace('<title>', ('<meta name="miorning-logo" content="dat
 $dockLogo = [Convert]::ToBase64String([IO.File]::ReadAllBytes((Join-Path $projectDir 'extension/icons/128.png')))
 $preview = $preview.Replace('<title>', ('<meta name="miorning-dock-logo" content="data:image/png;base64,' + $dockLogo + '"><title>'))
 $preview = $preview.Replace('<title>', '<meta name="miorning-options" content="extension/options.html"><title>')
-$runtime = @('control.js','store.js','shell.js','references.js','menus.js','dock.js','content.js') | ForEach-Object { '<script>' + [Environment]::NewLine + (Get-Content -LiteralPath (Join-Path $projectDir ('extension/' + $_)) -Encoding utf8 -Raw) + [Environment]::NewLine + '</script>' }
+$runtime = @('control.js','store.js','shell.js','references.js','menus.js','dock.js','editing.js','compat.js','content.js') | ForEach-Object { '<script>' + [Environment]::NewLine + (Get-Content -LiteralPath (Join-Path $projectDir ('extension/' + $_)) -Encoding utf8 -Raw) + [Environment]::NewLine + '</script>' }
 $preview = $preview.Replace('</html>', (($runtime -join [Environment]::NewLine) + '</html>'))
 [IO.File]::WriteAllText((Join-Path $staging 'preview.html'), $preview, [Text.UTF8Encoding]::new($false))
 $installer = Join-Path $dist ($name + '.zip')

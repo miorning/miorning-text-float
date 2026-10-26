@@ -10,7 +10,7 @@ const manifest = JSON.parse(fs.readFileSync(path.join(extension, 'manifest.json'
 const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.equal(manifest.manifest_version, 3);
 assert.equal(manifest.version, packageJson.version, 'Package and manifest versions must match');
-assert.deepEqual(manifest.content_scripts[0].js, ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'content.js']);
+assert.deepEqual(manifest.content_scripts[0].js, ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'editing.js', 'compat.js', 'content.js']);
 assert.deepEqual(manifest.content_scripts[0].matches, ['http://*/*', 'https://*/*']);
 const assets = new Set([manifest.background.service_worker, manifest.options_ui.page, ...Object.values(manifest.icons), ...Object.values(manifest.action.default_icon)]);
 for (const item of manifest.content_scripts) for (const file of [...(item.js || []), ...(item.css || [])]) assets.add(file);
@@ -25,7 +25,7 @@ for (const asset of assets) {
 let count = 0;
 function checkDirectory(directory) {
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
-    if (entry.isDirectory() && !['artifacts', 'node_modules'].includes(entry.name)) checkDirectory(path.join(directory, entry.name));
+    if (entry.isDirectory() && !['artifacts', 'node_modules'].includes(entry.name) && !entry.name.startsWith('research-')) checkDirectory(path.join(directory, entry.name));
     else if (entry.isFile() && /\.(?:js|cjs)$/.test(entry.name)) {
       const result = spawnSync(process.execPath, ['--check', path.join(directory, entry.name)], { encoding: 'utf8' });
       assert.equal(result.status, 0, result.stderr);

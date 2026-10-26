@@ -1,40 +1,44 @@
-# v0.4.1 验证 / Validation
+# v0.4.4 验证 / Validation
 
-本轮针对输入 `@` 后出现常驻标题横条的问题。测试使用隔离浏览器、模拟 LibTV 页面结构及生产版扩展文件，没有生成图片或视频，也没有操作日常账号数据。
+本轮修复小云雀实际域名 `www.xiaoyunque.com` 与 `xiaoyunque.com` 遗漏适配的问题，覆盖画布及 Agent 聊天框。即梦的换行路径保持不变，提示词保险栓 v1.8.0 无需更新。
 
-This patch targets persistent title strips triggered by `@`. Checks use isolated browsers, simulated LibTV structures, and production extension files. No media generation or everyday account data is involved.
+This patch enables the verified newline path on Xiaoyunque’s actual www and apex hosts for canvas and Agent chat inputs. Jimeng retains its working path; Prompt Guard v1.8.0 requires no update.
 
-## 修复证据 / Regression evidence
+## 根因与修复 / Cause and fix
 
-修改前复现了三种误判：已存在的节点标题、新出现的横向标题操作栏，以及较大页面中原有标题的文字更新。它们都被错误添加为置顶弹窗。
+v0.4.3 只匹配即梦及小云雀旧域名 `xyq.jianying.com`。新域名因此仍使用通用 BR 插入方式，网站段落模型将其解析为空格。使用真实 v0.4.3 安装包，已在两个新域名、两种输入框、两种按键组合中复现此问题。
 
-Before the fix, three cases reproduced unwanted promotion: an existing node title, a newly mounted horizontal title/action bar, and a title update late in a large document.
+v0.4.3 recognized Jimeng and the legacy Xiaoyunque host only. The new hosts fell back to BR insertion, which their paragraph model parsed as a space. The actual v0.4.3 package reproduces this across both new hosts, both input modes, and Enter / Shift+Enter.
 
-修复按结构与显示时机判断原生引用列表，不按“测试浮窗·不生产”文字屏蔽。相同名称的真实图片选项仍需可见并可选。
+公开前端确认新旧域名使用相同编辑器资源。v0.4.4 将新域名加入精确匹配，沿用网站原生 Shift+Enter 段落命令。普通 Enter 与提交组合不会转发；没有更改网页权限或保险栓，也没有添加页面主环境桥接。
 
-Detection uses native list structure and exposure timing, not a text blacklist. A real image option with that same name must remain visible and selectable.
+The public frontend serves the same editor assets on the new and legacy hosts. v0.4.4 adds exact host matches and invokes the existing native Shift+Enter paragraph command. Plain Enter and submit combinations are not forwarded. Permissions and Guard remain unchanged; no page-main-world bridge is added.
 
-## 本轮检查 / Current checks
+公开来源：[小云雀首页](https://www.xiaoyunque.com/home)、[官方编辑器资源](https://lf3-lv-buz.vlabstatic.com/obj/image-lvweb-buz/ies/pippit/platform_xyq/static/js/async/91662.f484a35490.js)。资源哈希与模块位置见[来源记录](v044-source-findings.json)。第三方网站源码不随包分发。
+
+## 当前检查 / Current checks
 
 | 检查 / Check | 结果 / Result |
 | --- | --- |
-| 原生菜单与标题栏 / Native menus and titles | 37 passed, 0 errors |
-| 完整编辑流程 / Editor integration | 21 passed, 0 errors |
+| 旧安装包复现、四域名模型与显示、相似域名排除 / Baseline, host models and geometry | 26 passed, 0 errors |
+| 真实双扩展、两种加载顺序、画布和聊天 / Paired production extensions | 72 passed, 0 errors |
 | 主回归 / Main regression | 53 passed, 0 errors |
-| 生产版扩展 / Production MV3 | Passed; source hashes unchanged |
-| 语法与资源 / Syntax and assets | 26 scripts, 15 assets passed |
-| 安装包预览 / Packaged preview | 6 checks passed, 0 errors |
+| 生产 MV3 安装与存储 / Production MV3 | Passed, no source drift |
+| 语法与资源 / Syntax and resources | 35 scripts, 17 assets |
+| 安装包预览 / Packaged preview | 6 passed, 0 errors |
 
-[修复后截图 / Fixed layout](images/v041-title-menu-fixed.png)
+[完整记录 / Full report](validation-v044.json) · [v0.4.3 历史记录 / Prior report](validation-v043.json) · [复现与构建 / Build](../SOURCE.md)
 
-[本轮验证记录 / Current report](validation-v041.json) · [上版完整记录 / Prior full report](validation-v040.json) · [源码与构建 / Build](../SOURCE.md)
+检查包括持久化模型、可见字符行坐标、确认保存、重新打开、图片引用与原生点击、Esc 关闭和保险栓在普通输入框中继续生效。生成计数及页面错误均为零。
+
+Checks cover durable model text, visible glyph rows, confirmation, reopening, image references and native clicks, Esc closure, and Guard protection in the original field. Generation counts and page errors are zero.
 
 ## 实站边界 / Live-site limits
 
-本轮尝试打开已知 LibTV 测试画布，但浏览器读取超时，未完成用户登录态下的实际菜单验收。模拟结构与真实扩展检查不能保证所有平台最新页面都已适配。
+本轮核对了真实公开前端源码，并使用固定版本的官方 ProseMirror 库和真实生产扩展验证。浏览器检查运行于隔离配置下的本地测试页，不等同于用户登录态画布及聊天框验收。原生操作系统输入法候选交互未自动化。
 
-Reading the known LibTV test canvas timed out, so the signed-in live menu was not verified in this iteration. Fixture and extension checks do not establish compatibility with every current platform page.
+Public frontend source was inspected and tested with pinned official ProseMirror libraries and production extension manifests. Browser checks use local fixtures in disposable profiles, not signed-in platform canvases or chats. Native OS IME candidate interaction was not automated.
 
-更新后请重新加载扩展并刷新 LibTV 页面；旧脚本已修改的页面元素需要刷新才能恢复。无需卸载或清空历史。
+**更新 / Update:** 覆盖原安装目录中的文本窗文件，重新加载扩展，再刷新小云雀网页。无需更新保险栓，无需卸载或清空历史。
 
-Reload the extension and refresh LibTV after updating to restore elements affected by the old script. Uninstalling or clearing history is unnecessary.
+Replace the existing Text Float files, reload the extension, and refresh Xiaoyunque. No Guard update, uninstall, or history reset is required.

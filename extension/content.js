@@ -229,6 +229,7 @@
     await controlsReady;
     await openTask;
     while (active?.references?.busy) await new Promise(resolve=>setTimeout(resolve,20));
+    while (active?.closeRequested && !active.composing) await new Promise(resolve=>setTimeout(resolve,20));
     if (active?.saveTimer && !active.composing) await flushDraft(active).catch(()=>{});
     while(pending.size) await Promise.allSettled([...pending]);
   }
@@ -257,7 +258,8 @@
     if (a.dead) return;
     a.dead=true;
     if (active===a) active = null;
-    clearTimeout(a.saveTimer);
+    clearTimeout(a.saveTimer);clearTimeout(a.closeTimer);
+    a.editing?.destroy();a.compat?.release();
     a.references?.destroy();
     a.menuManager?.destroy(); a.watch?.disconnect();
     restore(a.original);
@@ -267,7 +269,24 @@
     a.shell.destroy();
     // Blurring the actual editor commits the platform's normal pending input.
     a.editor.blur();
-    if (a.editor.isConnected) a.editor.focus({preventScroll: true});
+    if (a.editor.isConnected && !a.outsideClose) a.editor.focus({preventScroll: true});
+  }
+  // A user's confirmation is retained while IME, a reference insertion, or a
+  // version transaction finishes. Storage failures require an explicit retry.
+  function requestClose(a=active,{outside=false}={}) {
+    if (!a || a.dead || active!==a) return;
+    a.closeRequested=true;a.outsideClose=outside || a.outsideClose;
+    clearTimeout(a.closeTimer);
+    const attempt=()=>{
+      if (a.dead || active!==a || !a.closeRequested) return;
+      if (a.composing || a.busy || a.references?.busy) {
+        a.closeTimer=setTimeout(attempt,60);return;
+      }
+      a.closeRequested=false;
+      track(close()).catch(error=>reportError(a,error));
+    };
+    // Allow the final input event following compositionend to reach the model.
+    a.closeTimer=setTimeout(attempt,0);
   }
   async function close(commit = true) {
     const a=active;if (!a) return true;
@@ -290,7 +309,7 @@
     set(a.holder, {position:'fixed', inset:'auto', left:`${r.left}px`, top:`${r.top}px`, width:`${r.width}px`, height:`${r.height}px`, margin:'0', padding:'0', border:'0', 'max-width':'none', 'max-height':'none', 'min-width':'0', 'min-height':'0', overflow:'visible', background:'#faf8f2', transform:'none', zoom:'1', 'box-sizing':'border-box', 'z-index':'2147483647'});
     set(a.editor, {position: a.holder === a.editor ? 'fixed' : 'relative', width:`${r.width}px`, height:`${r.height}px`, 'min-height':'0', 'max-height':'none', 'min-width':'0', 'max-width':'none', margin:'0', padding:'4px 8px', border:'0', 'border-radius':'0', background:'#faf8f2', color:'#28332f', 'caret-color':'#116d53', '--canvas-controls-text':'#28332f', '--canvas-controls-border':'#bbc9bf', 'font-size':`${a.shell.fontSize}px`, 'line-height':'1.8', 'font-family':'"Segoe UI", "Microsoft YaHei", sans-serif', overflow:'auto', 'overflow-wrap':'anywhere', 'white-space':'pre-wrap', resize:'none', outline:'none', 'box-sizing':'border-box', 'text-align':'start', 'color-scheme':'light', transform:'none'});
     set(a.holder,{background:paper});
-    set(a.editor,{background:paper,color:ink,'caret-color':dark?'#a4d0b9':'#116d53','--canvas-controls-text':ink,'--canvas-controls-border':dark?'#58695f':'#bbc9bf','color-scheme':dark?'dark':'light'});
+    set(a.editor,{background:paper,color:ink,'caret-color':dark?'#a4d0b9':'#116d53','--canvas-controls-text':ink,'--canvas-controls-border':dark?'#58695f':'#bbc9bf','color-scheme':dark?'dark':'light','overscroll-behavior':'contain'});
     a.editor.setAttribute('data-miorning-theme',dark?'dark':'light');
     a.menuManager?.place();
     a.references?.refresh();
@@ -301,6 +320,9 @@
   }
   async function openNow(editor) {
     if (destroyed || destroying || !enabled || active?.editor === editor || !editor.isConnected || editor.disabled || editor.readOnly) return;
+    // An already-open Prompt Guard confirmation remains the user's decision.
+    // Never replay Enter or automatically confirm another extension's dialog.
+    if (globalThis.MiorningTextFloatCompat?.hasGuardDialog?.()) return;
     if (active?.composing) return;
     if (typeof editor.showPopover !== 'function' || editor.hasAttribute('popover')) return;
     opening = true;
@@ -340,13 +362,18 @@
     active = a;
     a.shell = globalThis.MiorningTextFloatShell.create({settings,
       logoUrl:globalThis.chrome?.runtime?.getURL ? undefined : document.querySelector('meta[name="miorning-logo"]')?.content,
-      onRect:arrange,onFont:()=>arrange(a.shell.rect),onTheme:theme=>{preferredTheme=theme;dock?.update({theme});arrange(a.shell.rect);},onClose:()=>{track(close()).catch(()=>{});},onFocus:focusEditor,
+      onRect:arrange,onFont:()=>arrange(a.shell.rect),onTheme:theme=>{preferredTheme=theme;dock?.update({theme});arrange(a.shell.rect);},onClose:()=>requestClose(a),onFocus:focusEditor,
       onSettings:value=>persistSettings(a,value),onSelectVersion:id=>track(selectVersion(a,id)),onDeleteVersion:id=>track(deleteVersion(a,id)),
       onSettingsPage:()=>{openSettings().catch(()=>{});}
     });
     renderHistory(a);
     if (a.error) reportError(a,a.error);
     editor.setAttribute('data-miorning-floating-editor','');
+    a.compat=globalThis.MiorningTextFloatCompat?.acquire(editor,{ownsReferenceNode:node=>a.menuManager?.owns(node)});
+    if (globalThis.MiorningTextFloatCompat?.hasGuard() && !a.compat?.protected) {
+      a.shell.setStatus('此输入框无法隔离回车保护；可复制换行文字粘贴，Esc 仍可保存');
+    }
+    a.editing=globalThis.MiorningTextFloatEditing.create({editor,isComposing:()=>a.composing || a.busy,onChange:()=>changed(a),onStatus:text=>a.shell.setStatus(text)});
     holder.setAttribute('popover','manual');
     arrange(a.shell.rect);
     holder.showPopover();
@@ -361,6 +388,38 @@
     if (!equal(initial,snapshot(editor))) changed(a);
     opening = false; openingContext = null;
   }
+  function ownsEvent(a,event) {
+    return event.composedPath().some(el=>el===a.editor || el===a.holder || el===a.shell.element ||
+      el?.classList?.contains('miorning-text-float-dock') || el?.hasAttribute?.('data-mention-suggest') ||
+      (el instanceof Element && a.menuManager?.owns(el)));
+  }
+  listen(window,'pointerdown',event=>{
+    const a=active;
+    if (a && !ownsEvent(a,event)) requestClose(a,{outside:true});
+  },{capture:true});
+  listen(window,'wheel',event=>{
+    const a=active;
+    if (!a || event.ctrlKey || event.metaKey || !ownsEvent(a,event)) return;
+    // Canvas libraries often capture wheel on document. Route the gesture to
+    // its actual scroll area before those listeners; also contain boundary scroll.
+    const path=event.composedPath();
+    let dx=event.deltaX,dy=event.deltaY;
+    if (event.shiftKey && !dx) {dx=dy;dy=0;}
+    for (const el of path) {
+      if (!(el instanceof Element)) continue;
+      const style=getComputedStyle(el);
+      const x=/auto|scroll/.test(style.overflowX) && el.scrollWidth>el.clientWidth;
+      const y=/auto|scroll/.test(style.overflowY) && el.scrollHeight>el.clientHeight;
+      if ((dx && x) || (dy && y)) {
+        const unit=event.deltaMode===1 ? (parseFloat(style.lineHeight)||20) : event.deltaMode===2 ? el.clientHeight : 1;
+        if (x) el.scrollLeft+=dx*unit;
+        if (y) el.scrollTop+=dy*unit;
+        break;
+      }
+      if (el===a.editor || el===a.holder || el===a.shell.element || el.hasAttribute('data-miorning-native-reference-menu') || el.classList.contains('miorning-text-float-dock')) break;
+    }
+    event.preventDefault();event.stopImmediatePropagation();
+  },{capture:true,passive:false});
   listen(document,'click',event=>{
     if (event.composedPath().some(el=>el?.classList?.contains('miorning-text-float-shell') || el?.classList?.contains('miorning-text-float-dock'))) return;
     const target = event.target instanceof Element ? event.target.closest(selector) : null;
@@ -374,7 +433,7 @@
   listen(document,'compositionstart',event=>{if(active?.editor.contains(event.target)) {active.composing=true;clearTimeout(active.saveTimer);active.saveTimer=0;}}, {capture:true});
   listen(document,'compositionend',event=>{if(active?.editor.contains(event.target)) {active.composing=false;changed(active);}}, {capture:true});
   listen(document,'beforeinput',event=>{if(active?.busy && active.editor.contains(event.target) && !active.restoring) {event.preventDefault();event.stopImmediatePropagation();}}, {capture:true});
-  listen(document,'keydown',event=>{
+  listen(window,'keydown',event=>{
     const inDock=event.composedPath().some(el=>el?.classList?.contains('miorning-text-float-dock'));
     if (inDock) return;
     if (!active?.composing && controlState && control?.matchesShortcut(event,controlState.shortcut)) {
@@ -386,31 +445,14 @@
     if (!a) return;
     if (event.key === 'Escape') {
       if (event.isComposing || a.composing || event.keyCode === 229) return;
-      const inWindow=event.composedPath().includes(a.shell.element) || a.editor.contains(event.target) || a.menuManager?.owns(event.target);
-      if (!inWindow) return;
       event.preventDefault();event.stopImmediatePropagation();
-      if (!a.shell.closeTransient?.()) track(close()).catch(()=>{});
+      if (!a.shell.closeTransient?.()) requestClose(a);
       return;
     }
     if (!a.editor.contains(event.target)) return;
-    if (a.busy) {event.preventDefault();event.stopImmediatePropagation();return;}
+    if (a.busy || (a.references?.busy && event.key==='Enter')) {event.preventDefault();event.stopImmediatePropagation();return;}
     if (a.references?.handleKey(event)) return;
-    if (event.key === 'Enter' && !event.isComposing && !a.composing && event.keyCode !== 229) {
-      event.stopImmediatePropagation();
-      // Chromium's default contenteditable paragraph insertion can turn two Enters
-      // into three line breaks under pre-wrap. A native editing command inserts one
-      // line break and keeps the browser's input/undo pipeline and mention nodes.
-      if (!(a.editor instanceof HTMLTextAreaElement)) {
-        event.preventDefault();
-        // With pre-wrap Chromium inserts a literal newline, which collapses to a
-        // space when a site's normal white-space style is restored. Ask the native
-        // editing command for a structural BR without rewriting framework DOM.
-        const value=a.editor.style.getPropertyValue('white-space'),priority=a.editor.style.getPropertyPriority('white-space');
-        a.editor.style.setProperty('white-space','normal','important');
-        try {document.execCommand('insertLineBreak');}
-        finally {a.editor.style.setProperty('white-space',value,priority);}
-      }
-    }
+    a.editing?.insertLineBreak(event);
   },{capture:true});
   listen(document,'input',event=>{
     if(active?.editor.contains(event.target)) {
@@ -430,10 +472,10 @@
     }
   });
   globalThis.MiorningTextFloat = Object.freeze({
-    version:'0.4.1', open, close, whenIdle,
+    version:'0.4.4', open, close, whenIdle,
     async toggle(){if(control){applyControlState(await control.toggle());return enabled;}enabled=!enabled;if(!enabled){if(active)active.composing=false;if(!await close())enabled=true;}return enabled;},
     async destroy(){destroying=true;if(active)active.composing=false;if(!await close()){destroying=false;return false;}destroyed=true;if(openingContext)openingContext.cleared=true;clearTimeout(pauseTimer);unsubscribeControl();dock?.destroy();unsubscribeCache?.();lifetime.abort();delete globalThis.MiorningTextFloat;return true;},
-    getState(){return {enabled,open:!!active,version:'0.4.1',fontSize:active?.shell.fontSize,theme:active?.shell.theme,rect:active?.shell.rect,busy:active?.busy || active?.references?.busy || opening,
+    getState(){return {enabled,open:!!active,version:'0.4.4',fontSize:active?.shell.fontSize,theme:active?.shell.theme,rect:active?.shell.rect,busy:active?.busy || active?.references?.busy || opening,
       historyKey:active?.key,selectedId:active?.selectedId,draftId:active?.draftId,versions:active?.doc?.versions.map(({snapshot,ownerToken,...version})=>version)};}
   });
   controlsReady=initializeControls().catch(error=>console.warn('喵咛文本窗：全局设置未能读取',error.message));

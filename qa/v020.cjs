@@ -142,7 +142,7 @@ module.exports = async function v020(h) {
     const button=page.locator('.confirm');const colour=await button.evaluate(el=>getComputedStyle(el).backgroundColor);const [r,g,b]=colour.match(/\d+/g).map(Number);assert.ok(r>g*1.2&&r>b*1.2,colour);
     for(const locator of [link,button,page.getByRole('button',{name:'夜间模式',exact:true}),page.getByRole('slider',{name:'拖动选择文本版本'})]) {const box=await locator.boundingBox();assert.ok(box&&box.x>=0&&box.x+box.width<=390,JSON.stringify(box));}
     assert.ok((await state()).rect.editor.height>=80);await page.screenshot({path:path.join(qa,'v020-narrow.png')});
-    const manifest=JSON.parse(fs.readFileSync(path.join(extension,'manifest.json'),'utf8'));assert.equal(manifest.version,'0.4.1');
+    const manifest=JSON.parse(fs.readFileSync(path.join(extension,'manifest.json'),'utf8'));assert.equal(manifest.version,'0.4.4');
     for(const size of [16,32,48,128]) assert.ok(fs.existsSync(path.join(extension,manifest.icons[size])),'Manifest icon '+size+' exists');
   });
   await test('name suggestion remains gray and Tab replaces original with native reference', async () => {

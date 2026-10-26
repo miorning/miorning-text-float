@@ -60,7 +60,7 @@ async function unit() {
     assert.deepEqual(manifest.host_permissions, ['http://*/*', 'https://*/*']);
     assert.deepEqual(manifest.content_scripts[0].matches, manifest.host_permissions);
     assert.equal(manifest.commands, undefined); assert.equal(manifest.optional_host_permissions, undefined);
-    assert.deepEqual(manifest.content_scripts[0].js, ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'content.js']);
+    assert.deepEqual(manifest.content_scripts[0].js, ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'editing.js', 'compat.js', 'content.js']);
     for (const file of manifest.content_scripts[0].js) assert.ok(fs.existsSync(path.join(extension, file)));
   });
   await test('fresh control state is enabled with Alt+K and no read-induced storage write', async () => {

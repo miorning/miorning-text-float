@@ -2,13 +2,16 @@
 
 把网页小文本框展开成可拖动、可缩放的编辑窗口，保留本地版本和网站原生图片引用。
 
-**v0.4.1** · [下载安装包](https://github.com/miorning/miorning-text-float/releases/download/v0.4.1/MiorningTextFloat-v0.4.1.zip) · [更新说明](https://github.com/miorning/miorning-text-float/releases/tag/v0.4.1)
+**v0.4.4** · [下载安装包](https://github.com/miorning/miorning-text-float/releases/download/v0.4.4/MiorningTextFloat-v0.4.4.zip) · [更新说明](RELEASE-NOTES.md)
 
 [English](README.en.md) · [B站](https://space.bilibili.com/353186187) · [测试范围](docs/VALIDATION.md)
 
 ## 这次更新
 
-- 修正 `@` 菜单识别过宽的问题，避免把画布标题和普通工具栏抬成常驻横条。
+- 补全小云雀实际域名 `www.xiaoyunque.com` 与 `xiaoyunque.com` 的换行适配，覆盖画布和 Agent 聊天框。即梦已经生效的处理保持不变。
+- 保留滚轮、Esc、外部点击关闭和原版保险栓兼容修复。
+- 仅更新文本窗，兼容原版提示词保险栓 v1.8.0：浮窗内回车换行，关闭后普通输入框继续受保护。
+- 输入法、引用插入或版本保存尚未结束时，确认会等它完成；保存失败保留文字与窗口。
 
 - 默认在所有普通 HTTP / HTTPS 网页开启，无需逐站添加。**Alt + K** 暂停或恢复所有网页，设置里可以录入新的组合键。
 - 举勾牌猫咪吸附四边：收起只露牌子，悬停或聚焦展开整只猫，身体贴边；点击打开快捷键、缓存和全局开关菜单。暂停后图标变淡，仍可点击恢复。
@@ -19,13 +22,13 @@
 
 拖动移动、四边与四角调整宽高。字号 **14–64**，点击数字打开滑块；日夜切换会记忆。
 
-**Enter 换行，Esc 确认并关闭**。字号滑块打开时，第一次 Esc 先收起滑块。新空白框首次输入是版本 1；已有原文先保存为版本 1。编辑旧版本会创建新版本，原版保留。
+**Enter / Shift+Enter 换行，Esc 或点击窗口外保存并关闭**。字号滑块打开时，第一次 Esc 先收起滑块。新空白框首次输入是版本 1；已有原文先保存为版本 1。编辑旧版本会创建新版本，原版保留。
 
 缓存按网站勾选，二次确认后删除对应版本和草稿。窗口偏好、快捷键、图标位置和全局开关保留。不会清理平台作品、登录信息或网站缓存。
 
 ## 安装 / 更新
 
-1. 解压 `MiorningTextFloat-v0.4.1.zip`。
+1. 解压 `MiorningTextFloat-v0.4.4.zip`。
 2. Chrome / Edge 开发者模式下，加载包内 **extension** 文件夹。
 3. 更新请覆盖**原安装目录**后重新加载扩展，并刷新已打开网页。不要卸载，以保留本机历史。
 
@@ -35,7 +38,7 @@
 
 ## 兼容与隐私
 
-Chrome / Edge 120+。全站授权不等于每种编辑器都已适配；闭合 Shadow DOM、跨域 iframe、纯画布输入及部分复杂编辑器仍有限制。特殊图片引用依赖网站原生功能。当前验证与实站边界见 [测试范围](docs/VALIDATION.md)。
+Chrome / Edge 120+。全站授权不等于每种编辑器都已适配；闭合 Shadow DOM、跨域 iframe、纯画布输入及部分复杂编辑器仍有限制。特殊图片引用依赖网站原生功能。保险栓兼容不修改其设置；少数无法隔离当前编辑器的页面仍可能拦截回车，见测试范围。当前验证与实站边界见 [测试范围](docs/VALIDATION.md)。
 
 无遥测、提示词上传或生成 API。确认不会生成图片或视频；原网站可能自行保存编辑内容。详见 [隐私说明](docs/PRIVACY.md)。
 

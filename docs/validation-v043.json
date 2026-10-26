@@ -1,0 +1,2968 @@
+{
+  "version": "0.4.3",
+  "createdAt": "2026-10-26T09:16:30.263468+00:00",
+  "scope": "Official public source evidence, real ProseMirror model tests, actual paired production extensions in disposable local fixtures. No signed-in canvas acceptance and no media generation.",
+  "beforeFix": {
+    "note": "Expected failures reproducing user-reported v0.4.2 behavior, not current-version failures.",
+    "editingHash": "fa5460eae4650b4b3c3dfd783842d6126b2e9aff69dba19dacf05c82ef4952ed",
+    "tests": [
+      {
+        "name": "current product Enter creates persistent visible newline in real paragraph-only ProseMirror",
+        "status": "failed",
+        "error": "AssertionError [ERR_ASSERTION]: durable ProseMirror model\n\n'甲 乙' !== '甲\\n乙'\n\n    at lines (<workspace>\\qa\\v043-newlines.cjs:40:40)\n    at <workspace>\\qa\\v043-newlines.cjs:46:206\n    at async test (<workspace>\\qa\\v043-newlines.cjs:41:49)\n    at async <workspace>\\qa\\v043-newlines.cjs:46:2",
+        "evidence": {
+          "model": "甲 乙",
+          "json": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "甲 乙"
+                  }
+                ]
+              }
+            ]
+          },
+          "html": "<p>甲 乙</p>",
+          "text": "甲 乙",
+          "chars": {
+            "甲": {
+              "x": 9,
+              "y": 13,
+              "width": 20,
+              "height": 22
+            },
+            "乙": {
+              "x": 34.546875,
+              "y": 13,
+              "width": 20.015625,
+              "height": 22
+            }
+          },
+          "generated": 0,
+          "events": [
+            {
+              "type": "beforeinput",
+              "inputType": "insertLineBreak",
+              "data": null,
+              "trusted": false,
+              "defaultPrevented": false
+            },
+            {
+              "type": "input",
+              "inputType": "insertLineBreak",
+              "data": null,
+              "trusted": true,
+              "defaultPrevented": false
+            }
+          ],
+          "selection": {
+            "from": 1,
+            "to": 1
+          }
+        }
+      },
+      {
+        "name": "current product Shift+Enter creates persistent visible newline in real paragraph-only ProseMirror",
+        "status": "failed",
+        "error": "AssertionError [ERR_ASSERTION]: durable ProseMirror model\n\n'甲 乙' !== '甲\\n乙'\n\n    at lines (<workspace>\\qa\\v043-newlines.cjs:40:40)\n    at <workspace>\\qa\\v043-newlines.cjs:47:218\n    at async test (<workspace>\\qa\\v043-newlines.cjs:41:49)\n    at async <workspace>\\qa\\v043-newlines.cjs:47:2",
+        "evidence": {
+          "model": "甲 乙",
+          "json": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "甲 乙"
+                  }
+                ]
+              }
+            ]
+          },
+          "html": "<p>甲 乙</p>",
+          "text": "甲 乙",
+          "chars": {
+            "甲": {
+              "x": 9,
+              "y": 13,
+              "width": 20,
+              "height": 22
+            },
+            "乙": {
+              "x": 34.546875,
+              "y": 13,
+              "width": 20.015625,
+              "height": 22
+            }
+          },
+          "generated": 0,
+          "events": [
+            {
+              "type": "keydown",
+              "key": "Shift",
+              "trusted": true,
+              "defaultPrevented": false
+            },
+            {
+              "type": "beforeinput",
+              "inputType": "insertLineBreak",
+              "data": null,
+              "trusted": false,
+              "defaultPrevented": false
+            },
+            {
+              "type": "input",
+              "inputType": "insertLineBreak",
+              "data": null,
+              "trusted": true,
+              "defaultPrevented": false
+            }
+          ],
+          "selection": {
+            "from": 1,
+            "to": 1
+          }
+        }
+      }
+    ]
+  },
+  "syntax": {
+    "scripts": 33,
+    "assets": 17,
+    "status": "passed"
+  },
+  "checks": {
+    "prosemirror": {
+      "version": "0.4.3",
+      "suite": "v043-real-prosemirror-newlines",
+      "scope": "Pinned official ProseMirror packages with a paragraph/text/atom schema and platform-equivalent keymaps; browser geometry and persisted model after blur/re-render. Not authenticated platform acceptance.",
+      "packages": {
+        "prosemirror-model": "1.25.12",
+        "prosemirror-state": "1.4.4",
+        "prosemirror-view": "1.42.8",
+        "prosemirror-history": "1.5.1",
+        "prosemirror-keymap": "1.2.3",
+        "prosemirror-commands": "1.7.2"
+      },
+      "tests": [
+        {
+          "name": "native platform Shift+Enter splitBlock creates persistent visible paragraph newline",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Shift",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": true,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "jimeng.jianying.com Enter creates persistent visible newline without Enter generation",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "jimeng.jianying.com Shift+Enter creates persistent visible newline without Enter generation",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Shift",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "jimeng.jianying.com Ctrl/Meta/Alt Enter stays blocked without replay or generation",
+          "status": "passed",
+          "evidence": {
+            "model": "甲乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲乙</p>",
+            "text": "甲乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 29,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Control",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Meta",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Alt",
+                "trusted": true,
+                "defaultPrevented": false
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "xyq.jianying.com Enter creates persistent visible newline without Enter generation",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "xyq.jianying.com Shift+Enter creates persistent visible newline without Enter generation",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Shift",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "xyq.jianying.com Ctrl/Meta/Alt Enter stays blocked without replay or generation",
+          "status": "passed",
+          "evidence": {
+            "model": "甲乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲乙</p>",
+            "text": "甲乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 29,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Control",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Meta",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Alt",
+                "trusted": true,
+                "defaultPrevented": false
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "guarded native Shift+Enter relay preserves model and geometry without invoking Enter generation",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "current relay reaches native editor without leaking Enter to page bubble handlers",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "cancelled Shift+Enter without a model change reports failure and never attempts unsafe DOM fallback",
+          "status": "passed",
+          "evidence": {
+            "model": "甲乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲乙</p>",
+            "text": "甲乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 29,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "negative diagnostic: DOM paragraph fallback invokes internal Enter command and must not be used",
+          "status": "passed",
+          "evidence": {
+            "model": "甲乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲乙</p>",
+            "text": "甲乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 29,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 1,
+            "events": [
+              {
+                "type": "beforeinput",
+                "inputType": "insertParagraph",
+                "data": null,
+                "trusted": false,
+                "defaultPrevented": false
+              },
+              {
+                "type": "input",
+                "inputType": "insertParagraph",
+                "data": null,
+                "trusted": true,
+                "defaultPrevented": false
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "negative diagnostic: literal newline fallback also invokes internal Enter and must not be used",
+          "status": "passed",
+          "evidence": {
+            "model": "甲乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲乙</p>",
+            "text": "甲乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 29,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 1,
+            "events": [
+              {
+                "type": "input",
+                "inputType": "insertText",
+                "data": null,
+                "trusted": true,
+                "defaultPrevented": false
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "current helper preserves native reference model identity and framework-owned click handler",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "ref1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙<span contenteditable=\"false\" data-reference-id=\"ref1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "text": "甲\n\n乙@参考图\n",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 4,
+              "to": 4
+            }
+          }
+        },
+        {
+          "name": "current helper selection replacement updates model and preserves surrounding text",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p>乙</p>",
+            "text": "甲\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 43,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Shift",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "current helper consecutive Enter preserves empty lines in model and visual positions",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙</p>",
+            "text": "甲\n\n\n\n\n乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 9,
+                "y": 73,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              },
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "current helper trailing empty line survives blur and model re-render",
+          "status": "passed",
+          "evidence": {
+            "model": "甲乙\n",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲乙"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                }
+              ]
+            },
+            "html": "<p>甲乙</p><p><br class=\"ProseMirror-trailingBreak\"></p>",
+            "text": "甲乙\n\n\n",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 29,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        },
+        {
+          "name": "current helper insertion remains in native ProseMirror undo history",
+          "status": "passed",
+          "evidence": {
+            "model": "甲乙",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲乙"
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲乙</p>",
+            "text": "甲乙",
+            "chars": {
+              "甲": {
+                "x": 9,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              },
+              "乙": {
+                "x": 29,
+                "y": 13,
+                "width": 20,
+                "height": 22
+              }
+            },
+            "generated": 0,
+            "events": [
+              {
+                "type": "keydown",
+                "key": "Enter",
+                "trusted": false,
+                "defaultPrevented": true
+              },
+              {
+                "type": "keydown",
+                "key": "Control",
+                "trusted": true,
+                "defaultPrevented": false
+              },
+              {
+                "type": "keydown",
+                "key": "z",
+                "trusted": true,
+                "defaultPrevented": true
+              }
+            ],
+            "selection": {
+              "from": 1,
+              "to": 1
+            }
+          }
+        }
+      ],
+      "pageErrors": [],
+      "editingHash": "8d76deffe962028be27df7ca7096aea6de341805f76c80e132b6b2d648c69b98",
+      "passed": 17,
+      "failed": 0,
+      "sourceDrift": false,
+      "status": "passed"
+    },
+    "pairedExtensions": {
+      "suite": "v043-prosemirror-mv3",
+      "scope": "Both unchanged production-manifest extensions in both load orders, real pinned ProseMirror paragraph/text/reference model, and locally intercepted official-host URLs. No authenticated platform acceptance or real generation. Guard source and user storage remain untouched.",
+      "textFloatVersion": "0.4.3",
+      "guardVersion": "1.8.0",
+      "packages": {
+        "prosemirror-model": "1.25.12",
+        "prosemirror-state": "1.4.4",
+        "prosemirror-view": "1.42.8",
+        "prosemirror-history": "1.5.1",
+        "prosemirror-keymap": "1.2.3",
+        "prosemirror-commands": "1.7.2"
+      },
+      "tests": [
+        {
+          "name": "Guard first / jimeng.jianying.com UI click opens actual floating editor with bounded Guard exemption",
+          "status": "passed",
+          "evidence": {
+            "historyKey": "[\"https://jimeng.jianying.com\",\"/canvas/local-prosemirror-compatibility\",\"\",\"fixture\",\"DIV|editor||隔离测试提示词||\"]",
+            "version": "0.4.3"
+          }
+        },
+        {
+          "name": "Guard first / jimeng.jianying.com physical Enter and Shift+Enter create model paragraphs and retain image reference",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Guard first / jimeng.jianying.com modified Enter cannot invoke local generation command",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Guard first / jimeng.jianying.com native reference click remains attached and blur then Escape persists rich version",
+          "status": "passed",
+          "evidence": {
+            "savedVersions": 2,
+            "snapshot": {
+              "kind": "rich",
+              "value": "<p>甲</p><p><br></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"ProseMirror-selectednode\">@参考图</span><img alt=\"\"><br></p>"
+            }
+          }
+        },
+        {
+          "name": "Guard first / jimeng.jianying.com model re-render and UI reopen keep newline and history identity",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 1,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              59,
+              89,
+              119
+            ]
+          }
+        },
+        {
+          "name": "Guard first / jimeng.jianying.com original field after closing still invokes unchanged Guard and never generates",
+          "status": "passed",
+          "evidence": {
+            "guardModalObserved": true,
+            "generated": 0
+          }
+        },
+        {
+          "name": "Guard first / xyq.jianying.com UI click opens actual floating editor with bounded Guard exemption",
+          "status": "passed",
+          "evidence": {
+            "historyKey": "[\"https://xyq.jianying.com\",\"/canvas/local-prosemirror-compatibility\",\"\",\"fixture\",\"DIV|editor||隔离测试提示词||\"]",
+            "version": "0.4.3"
+          }
+        },
+        {
+          "name": "Guard first / xyq.jianying.com physical Enter and Shift+Enter create model paragraphs and retain image reference",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Guard first / xyq.jianying.com modified Enter cannot invoke local generation command",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Guard first / xyq.jianying.com native reference click remains attached and blur then Escape persists rich version",
+          "status": "passed",
+          "evidence": {
+            "savedVersions": 2,
+            "snapshot": {
+              "kind": "rich",
+              "value": "<p>甲</p><p><br></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"ProseMirror-selectednode\">@参考图</span><img alt=\"\"><br></p>"
+            }
+          }
+        },
+        {
+          "name": "Guard first / xyq.jianying.com model re-render and UI reopen keep newline and history identity",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 1,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              59,
+              89,
+              119
+            ]
+          }
+        },
+        {
+          "name": "Guard first / xyq.jianying.com original field after closing still invokes unchanged Guard and never generates",
+          "status": "passed",
+          "evidence": {
+            "guardModalObserved": true,
+            "generated": 0
+          }
+        },
+        {
+          "name": "Text Float first / jimeng.jianying.com UI click opens actual floating editor with bounded Guard exemption",
+          "status": "passed",
+          "evidence": {
+            "historyKey": "[\"https://jimeng.jianying.com\",\"/canvas/local-prosemirror-compatibility\",\"\",\"fixture\",\"DIV|editor||隔离测试提示词||\"]",
+            "version": "0.4.3"
+          }
+        },
+        {
+          "name": "Text Float first / jimeng.jianying.com physical Enter and Shift+Enter create model paragraphs and retain image reference",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Text Float first / jimeng.jianying.com modified Enter cannot invoke local generation command",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Text Float first / jimeng.jianying.com native reference click remains attached and blur then Escape persists rich version",
+          "status": "passed",
+          "evidence": {
+            "savedVersions": 2,
+            "snapshot": {
+              "kind": "rich",
+              "value": "<p>甲</p><p><br></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"ProseMirror-selectednode\">@参考图</span><img alt=\"\"><br></p>"
+            }
+          }
+        },
+        {
+          "name": "Text Float first / jimeng.jianying.com model re-render and UI reopen keep newline and history identity",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 1,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              59,
+              89,
+              119
+            ]
+          }
+        },
+        {
+          "name": "Text Float first / jimeng.jianying.com original field after closing still invokes unchanged Guard and never generates",
+          "status": "passed",
+          "evidence": {
+            "guardModalObserved": true,
+            "generated": 0
+          }
+        },
+        {
+          "name": "Text Float first / xyq.jianying.com UI click opens actual floating editor with bounded Guard exemption",
+          "status": "passed",
+          "evidence": {
+            "historyKey": "[\"https://xyq.jianying.com\",\"/canvas/local-prosemirror-compatibility\",\"\",\"fixture\",\"DIV|editor||隔离测试提示词||\"]",
+            "version": "0.4.3"
+          }
+        },
+        {
+          "name": "Text Float first / xyq.jianying.com physical Enter and Shift+Enter create model paragraphs and retain image reference",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Text Float first / xyq.jianying.com modified Enter cannot invoke local generation command",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 0,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              299,
+              331.390625,
+              363.78125
+            ]
+          }
+        },
+        {
+          "name": "Text Float first / xyq.jianying.com native reference click remains attached and blur then Escape persists rich version",
+          "status": "passed",
+          "evidence": {
+            "savedVersions": 2,
+            "snapshot": {
+              "kind": "rich",
+              "value": "<p>甲</p><p><br></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"ProseMirror-selectednode\">@参考图</span><img alt=\"\"><br></p>"
+            }
+          }
+        },
+        {
+          "name": "Text Float first / xyq.jianying.com model re-render and UI reopen keep newline and history identity",
+          "status": "passed",
+          "evidence": {
+            "model": "甲\n\n乙@参考图",
+            "json": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "甲"
+                    }
+                  ]
+                },
+                {
+                  "type": "paragraph"
+                },
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "乙"
+                    },
+                    {
+                      "type": "reference",
+                      "attrs": {
+                        "id": "fixture-image-1"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "html": "<p>甲</p><p><br class=\"ProseMirror-trailingBreak\"></p><p>乙<span contenteditable=\"false\" data-reference-id=\"fixture-image-1\" class=\"\">@参考图</span><img class=\"ProseMirror-separator\" alt=\"\"><br class=\"ProseMirror-trailingBreak\"></p>",
+            "generated": 0,
+            "referenceClicks": 1,
+            "referenceSame": false,
+            "nativeKeys": [
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Shift",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Enter",
+                "shift": true,
+                "ctrl": false,
+                "meta": false,
+                "alt": false,
+                "bubbles": false,
+                "trusted": false
+              },
+              {
+                "key": "Control",
+                "shift": false,
+                "ctrl": true,
+                "meta": false,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Meta",
+                "shift": false,
+                "ctrl": false,
+                "meta": true,
+                "alt": false,
+                "bubbles": true,
+                "trusted": true
+              },
+              {
+                "key": "Alt",
+                "shift": false,
+                "ctrl": false,
+                "meta": false,
+                "alt": true,
+                "bubbles": true,
+                "trusted": true
+              }
+            ],
+            "paragraphTops": [
+              59,
+              89,
+              119
+            ]
+          }
+        },
+        {
+          "name": "Text Float first / xyq.jianying.com original field after closing still invokes unchanged Guard and never generates",
+          "status": "passed",
+          "evidence": {
+            "guardModalObserved": true,
+            "generated": 0
+          }
+        }
+      ],
+      "pageErrors": [],
+      "productHashes": {
+        "manifest.json": "d10c0ebaa23feaa64d5e1bf11ae1ffb41d6a3c28cab3a78fb1c963f939dce48c",
+        "control.js": "4d755db0f4ffa4a4395b1a902c1c623ab217409c7b26bcb7c153bfdaef8baec6",
+        "store.js": "f4ede9da2ab2c2f745f61defc739a4f26c7e5ff2f03b07541df7ec5ee53077b5",
+        "shell.js": "bf03750c8b4d878e018aa86c2f3d02578ad58538aeb3b0b3817223a399a32a8b",
+        "references.js": "ed6a81516994699a02e8b5149df8650132072da6897aefbbb3fd8482b5e309d8",
+        "menus.js": "59c33ac3f1326851bc2480a740e120fc985581e1020afe1b19308be11390f5ec",
+        "dock.js": "a26fdac3695acb76b78f587761e5dc46160e403d35a30146cb0ea3206f6763f6",
+        "editing.js": "8d76deffe962028be27df7ca7096aea6de341805f76c80e132b6b2d648c69b98",
+        "compat.js": "670d9c44efcb67bda2c9f026f693038dea4b0aba3d2151a3b0a7cb337d650457",
+        "content.js": "df9f763dedbe04fcbc3814fdbdfd5f44eb520d1acf1728f11a0ab4ab159b6dac",
+        "background.js": "7b7e95897d74fa5aad29bcbe53246cc946d9a24d4369f5e3120d4da92f433f4c"
+      },
+      "guardHashes": {
+        "manifest.json": "2b5cf0ec19de27b522d0135ec7dfb57394772b2c068a0671734da3d952832095",
+        "shotlab-bridge.js": "cf6e1e8bf2995d36be63f1b12a0720e43c061c40b55f7a4fb0f567fea88b0f0a",
+        "module-policy.js": "0405c7acccff17b56aa5277aa208527c96c92ec2c429c5895c9b445494579890",
+        "inspiration.js": "1ac6e12cae2c09acccf377f0bc3250195bb190c6d2f5ed071f9545ef69cb3592",
+        "hub.js": "156f52a461cb027f1b0da072d9efeea8db38d423d69e43e27677c36e29bf8acf",
+        "content.js": "9260397fc22f52d036a2b2c6683e4af0756cf6945d4017c9b7c11943c34f52b6",
+        "background.js": "07bae62f195cd45c8780e401f05a7b6791a328f9ed5d280786ca79862a069365"
+      },
+      "productSourceDrift": false,
+      "guardSourceDrift": false,
+      "passed": 24,
+      "failed": 0,
+      "status": "passed"
+    },
+    "main": {
+      "startedAt": "2026-10-26T09:11:15.964Z",
+      "mode": "isolated headless Chromium, local fixture only; actual extension source injected",
+      "browser": "msedge.exe",
+      "tests": [
+        {
+          "name": "click opens original textarea; confirmation closes and restores style",
+          "status": "passed",
+          "milliseconds": 993
+        },
+        {
+          "name": "two Enter newlines and Esc commit survive refresh",
+          "status": "passed",
+          "milliseconds": 440
+        },
+        {
+          "name": "Ctrl+Enter no longer confirms the floating editor",
+          "status": "passed",
+          "milliseconds": 375
+        },
+        {
+          "name": "font controls clamp 14–64 and preserve native textarea caret",
+          "status": "passed",
+          "milliseconds": 351
+        },
+        {
+          "name": "removed keep-text control is absent and theme control retains editor selection",
+          "status": "passed",
+          "milliseconds": 256
+        },
+        {
+          "name": "title drag and keyboard movement retain bounds",
+          "status": "passed",
+          "milliseconds": 625
+        },
+        {
+          "name": "all eight resize handles independently move correct edges",
+          "status": "passed",
+          "milliseconds": 3250,
+          "details": [
+            {
+              "direction": "n",
+              "width": 760,
+              "height": 540
+            },
+            {
+              "direction": "ne",
+              "width": 780,
+              "height": 540
+            },
+            {
+              "direction": "e",
+              "width": 780,
+              "height": 520
+            },
+            {
+              "direction": "se",
+              "width": 780,
+              "height": 540
+            },
+            {
+              "direction": "s",
+              "width": 760,
+              "height": 540
+            },
+            {
+              "direction": "sw",
+              "width": 780,
+              "height": 540
+            },
+            {
+              "direction": "w",
+              "width": 780,
+              "height": 520
+            },
+            {
+              "direction": "nw",
+              "width": 780,
+              "height": 540
+            }
+          ]
+        },
+        {
+          "name": "resize keyboard and minimum geometry",
+          "status": "passed",
+          "milliseconds": 450
+        },
+        {
+          "name": "contenteditable native Enter produces two visible line breaks",
+          "status": "passed",
+          "milliseconds": 364
+        },
+        {
+          "name": "existing portal @ menu opens above editor and inserts native reference token",
+          "status": "passed",
+          "milliseconds": 459
+        },
+        {
+          "name": "text entered after reference supports native undo without deleting token",
+          "status": "passed",
+          "milliseconds": 356
+        },
+        {
+          "name": "Escape confirms editor even while native reference menu is open",
+          "status": "passed",
+          "milliseconds": 372
+        },
+        {
+          "name": "DOM replacement cleans floating styles and supports new editor",
+          "status": "passed",
+          "milliseconds": 415
+        },
+        {
+          "name": "transformed clipped ancestor does not shrink or clip floating editor",
+          "status": "passed",
+          "milliseconds": 303
+        },
+        {
+          "name": "narrow viewport and reduced motion retain reachable controls",
+          "status": "passed",
+          "milliseconds": 380
+        },
+        {
+          "name": "viewport shrink clamps window and retains usable editor",
+          "status": "passed",
+          "milliseconds": 286
+        },
+        {
+          "name": "composition guard does not close or prevent candidate confirmation",
+          "status": "passed",
+          "milliseconds": 347,
+          "details": "Synthetic composition guard only; actual OS IME remains unverified."
+        },
+        {
+          "name": "toggle pauses and resumes feature without duplicate shell",
+          "status": "passed",
+          "milliseconds": 419
+        },
+        {
+          "name": "complete reference name shows gray suggestion without inserting a token",
+          "status": "passed",
+          "milliseconds": 363
+        },
+        {
+          "name": "Tab replaces complete name with native token by default",
+          "status": "passed",
+          "milliseconds": 319
+        },
+        {
+          "name": "legacy keep-text preference cannot revive removed behavior; Tab replaces name",
+          "status": "passed",
+          "milliseconds": 380
+        },
+        {
+          "name": "Shift+Tab keeps text without accepting name suggestion",
+          "status": "passed",
+          "milliseconds": 309
+        },
+        {
+          "name": "Escape confirms typed name without accepting gray reference suggestion",
+          "status": "passed",
+          "milliseconds": 402
+        },
+        {
+          "name": "continued typing hides name suggestion without changing text",
+          "status": "passed",
+          "milliseconds": 317
+        },
+        {
+          "name": "duplicate connected reference names do not auto-select a candidate",
+          "status": "passed",
+          "milliseconds": 316
+        },
+        {
+          "name": "composition state suppresses name candidate and Tab acceptance",
+          "status": "passed",
+          "milliseconds": 299,
+          "details": "Synthetic composition-state guard; actual operating-system candidate UI unverified."
+        },
+        {
+          "name": "unmatched text leaves native Tab focus navigation intact",
+          "status": "passed",
+          "milliseconds": 295
+        },
+        {
+          "name": "native reference button no-op preserves original name and never calls undo",
+          "status": "passed",
+          "milliseconds": 1537
+        },
+        {
+          "name": "failed name deletion retains original text plus reference without undoing user work",
+          "status": "passed",
+          "milliseconds": 305
+        },
+        {
+          "name": "pending acceptance cannot undo a different focused field",
+          "status": "passed",
+          "milliseconds": 1560
+        },
+        {
+          "name": "closing during pending acceptance waits safely and later Escape preserves text",
+          "status": "passed",
+          "milliseconds": 1604
+        },
+        {
+          "name": "native gray mention suggestion is hidden only inside floating editor",
+          "status": "passed",
+          "milliseconds": 347
+        },
+        {
+          "name": "Tab accepts true reference without counting native gray suggestion as token",
+          "status": "passed",
+          "milliseconds": 306
+        },
+        {
+          "name": "complete name split across adjacent text nodes and inline spans still matches",
+          "status": "passed",
+          "milliseconds": 666
+        },
+        {
+          "name": "name matching stops at newline and existing noneditable token boundaries",
+          "status": "passed",
+          "milliseconds": 529
+        },
+        {
+          "name": "v0.2 first open immediately preserves original as version 1",
+          "status": "passed",
+          "milliseconds": 460
+        },
+        {
+          "name": "v0.3 empty editor starts first typed content at version 1 and later edits fork version 2",
+          "status": "passed",
+          "milliseconds": 801
+        },
+        {
+          "name": "v0.3 blank rich-text placeholder does not consume version 1",
+          "status": "passed",
+          "milliseconds": 400
+        },
+        {
+          "name": "v0.2 confirmed version 2 persists across reload and preserves version 1",
+          "status": "passed",
+          "milliseconds": 619
+        },
+        {
+          "name": "v0.2 typing and deleting from old version fork without modifying saved versions",
+          "status": "passed",
+          "milliseconds": 1078
+        },
+        {
+          "name": "v0.2 delete version keeps remaining numbers and allocates next number",
+          "status": "passed",
+          "milliseconds": 868
+        },
+        {
+          "name": "v0.2 more than 1000 versions retained and range selects first/middle/last",
+          "status": "passed",
+          "milliseconds": 1085
+        },
+        {
+          "name": "v0.2 histories isolate separate fields and project routes",
+          "status": "passed",
+          "milliseconds": 782
+        },
+        {
+          "name": "window dimensions font and theme persist across refresh",
+          "status": "passed",
+          "milliseconds": 826
+        },
+        {
+          "name": "v0.2 immediate input plus Esc commits latest text without draft race",
+          "status": "passed",
+          "milliseconds": 307
+        },
+        {
+          "name": "v0.2 failed persistence keeps edited text and window open until retry succeeds",
+          "status": "passed",
+          "milliseconds": 434
+        },
+        {
+          "name": "v0.2 rich reference snapshots preserve identity but remove executable attributes",
+          "status": "passed",
+          "milliseconds": 749
+        },
+        {
+          "name": "v0.2 branding link icon warm-red confirmation and narrow accessibility",
+          "status": "passed",
+          "milliseconds": 307
+        },
+        {
+          "name": "name suggestion remains gray and Tab replaces original with native reference",
+          "status": "passed",
+          "milliseconds": 461
+        },
+        {
+          "name": "v0.2 Enter and Tab cannot mutate rich text while confirmation is saving",
+          "status": "passed",
+          "milliseconds": 399
+        },
+        {
+          "name": "v0.2 anonymous equal-label fields retain distinct histories after DOM reordering",
+          "status": "passed",
+          "milliseconds": 699
+        },
+        {
+          "name": "v0.2 noncommitting close draft reopens and confirms without altering earlier draft",
+          "status": "passed",
+          "milliseconds": 535
+        },
+        {
+          "name": "no browser runtime page errors",
+          "status": "passed",
+          "details": []
+        }
+      ],
+      "sourceHashes": {
+        "control.js": "4d755db0f4ffa4a4395b1a902c1c623ab217409c7b26bcb7c153bfdaef8baec6",
+        "store.js": "f4ede9da2ab2c2f745f61defc739a4f26c7e5ff2f03b07541df7ec5ee53077b5",
+        "shell.js": "bf03750c8b4d878e018aa86c2f3d02578ad58538aeb3b0b3817223a399a32a8b",
+        "references.js": "ed6a81516994699a02e8b5149df8650132072da6897aefbbb3fd8482b5e309d8",
+        "menus.js": "59c33ac3f1326851bc2480a740e120fc985581e1020afe1b19308be11390f5ec",
+        "dock.js": "a26fdac3695acb76b78f587761e5dc46160e403d35a30146cb0ea3206f6763f6",
+        "editing.js": "8d76deffe962028be27df7ca7096aea6de341805f76c80e132b6b2d648c69b98",
+        "compat.js": "670d9c44efcb67bda2c9f026f693038dea4b0aba3d2151a3b0a7cb337d650457",
+        "content.js": "df9f763dedbe04fcbc3814fdbdfd5f44eb520d1acf1728f11a0ab4ab159b6dac",
+        "background.js": "7b7e95897d74fa5aad29bcbe53246cc946d9a24d4369f5e3120d4da92f433f4c",
+        "manifest.json": "d10c0ebaa23feaa64d5e1bf11ae1ffb41d6a3c28cab3a78fb1c963f939dce48c",
+        "options.js": "7e24ae25a6ac61b6ce7c7fbc08c56ad319a5fe27f8a24ed691cd3050300b9e10",
+        "options.html": "fd71ffab1ee436fa8d82df4a0d4bad5300d03795d800f78881deec8175cc532d",
+        "options.css": "6719cc00e699ee7448f001374022681655a919113e93b7674710780d9bb6f165"
+      },
+      "limitations": [
+        "Real operating-system IME candidate interaction is not automated.",
+        "Fixture contenteditable is not a substitute for live LibTV React integration."
+      ],
+      "browserVersion": "156.0.4314.42",
+      "pageErrors": [],
+      "extensionSmoke": {
+        "status": "passed",
+        "browser": "msedge.exe headless disposable profile",
+        "manifest": "unmodified production manifest",
+        "network": "All external requests blocked; simulated LibTV-origin document fulfilled exclusively from local fixture.",
+        "sourceScripts": "byte-identical to extension source",
+        "checks": [
+          "MV3 content script auto injection",
+          "textarea Enter/Esc",
+          "LibTV aria-placeholder parent popover branch",
+          "no-role native menu selector",
+          "native mention insertion",
+          "native mention text contrast",
+          "real chrome.storage.local version persistence across reload",
+          "real MV3 settings persistence across reload",
+          "extension assets load",
+          "storage failure leaves editor open and preserves text",
+          "storage retry commits latest text",
+          "no website IndexedDB fallback in extension context",
+          "production options global toggle updates existing tab while retaining histories",
+          "shortcut recording, cancel and reset persist in real extension storage",
+          "cache selection requires second confirmation and cancel preserves data",
+          "packaged cat dock loads while paused; old site allowlist and keep-text control removed"
+        ],
+        "serviceWorkers": [
+          "chrome-extension://cjabmopnpedhmfdapnbgofdjmigdebfk/background.js"
+        ]
+      },
+      "siteControlCoverage": "All-site pause/resume and cross-tab shortcut persistence are covered by qa/v040-control.cjs; the old optional-site model is retired.",
+      "sourceDrift": [],
+      "completedAt": "2026-10-26T09:12:12.428Z",
+      "summary": {
+        "passed": 53,
+        "failed": 0
+      }
+    },
+    "genericEditing": {
+      "version": "0.4.3",
+      "scope": "Native Chromium editing and structured beforeinput contract fixtures; no authenticated platform acceptance claimed",
+      "tests": [
+        {
+          "name": "old implementation reproduces textarea Enter lost after earlier preventDefault",
+          "status": "passed"
+        },
+        {
+          "name": "textarea Enter inserts one newline despite earlier preventDefault",
+          "status": "passed"
+        },
+        {
+          "name": "textarea Shift+Enter replaces selection and leaves caret on next line",
+          "status": "passed"
+        },
+        {
+          "name": "textarea native undo reverses newline",
+          "status": "passed"
+        },
+        {
+          "name": "Ctrl and Meta Enter cannot generate or add accidental text",
+          "status": "passed"
+        },
+        {
+          "name": "old implementation reproduces rejected newline in transaction-backed fixture",
+          "status": "passed"
+        },
+        {
+          "name": "beforeinput supplies real caret range and updates durable model without duplicate DOM insertion",
+          "status": "passed"
+        },
+        {
+          "name": "structured model consecutive Shift+Enter retains empty line",
+          "status": "passed"
+        },
+        {
+          "name": "plain rich editor Enter inserts structural break and remains newline after style restoration",
+          "status": "passed"
+        },
+        {
+          "name": "rich empty trailing lines are exactly one line per Enter",
+          "status": "passed"
+        },
+        {
+          "name": "rich selection replacement preserves surrounding text",
+          "status": "passed"
+        },
+        {
+          "name": "nested whitespace overrides restored with structural break",
+          "status": "passed"
+        },
+        {
+          "name": "native mention token identity and click handler survive insertion",
+          "status": "passed"
+        },
+        {
+          "name": "rich native undo reverses only the insertion",
+          "status": "passed"
+        },
+        {
+          "name": "plaintext-only retains literal newline without rich markup",
+          "status": "passed"
+        },
+        {
+          "name": "IME candidate Enter is left untouched and does not notify a change",
+          "status": "passed"
+        },
+        {
+          "name": "destroyed helper performs no insert",
+          "status": "passed"
+        },
+        {
+          "name": "textarea fallback delivers input to native controlled value setter",
+          "status": "passed"
+        },
+        {
+          "name": "maxlength is honored by fallback without losing text",
+          "status": "passed"
+        }
+      ],
+      "pageErrors": []
+    },
+    "packagedPreview": {
+      "version": "0.4.3",
+      "scope": "Packaged standalone preview; local isolated browser only",
+      "checks": [
+        "Packaged runtime version matches manifest",
+        "Embedded transparent cat plaque reveals fully on hover and retracts",
+        "Embedded cat logo loads without external files",
+        "Theme and font slider work in bundled preview",
+        "Esc saves multiline text and persisted preferences reopen",
+        "No generation and no browser errors"
+      ],
+      "pageErrors": [],
+      "status": "passed"
+    }
+  },
+  "sourceHashes": {
+    "control.js": "4d755db0f4ffa4a4395b1a902c1c623ab217409c7b26bcb7c153bfdaef8baec6",
+    "store.js": "f4ede9da2ab2c2f745f61defc739a4f26c7e5ff2f03b07541df7ec5ee53077b5",
+    "shell.js": "bf03750c8b4d878e018aa86c2f3d02578ad58538aeb3b0b3817223a399a32a8b",
+    "references.js": "ed6a81516994699a02e8b5149df8650132072da6897aefbbb3fd8482b5e309d8",
+    "menus.js": "59c33ac3f1326851bc2480a740e120fc985581e1020afe1b19308be11390f5ec",
+    "dock.js": "a26fdac3695acb76b78f587761e5dc46160e403d35a30146cb0ea3206f6763f6",
+    "editing.js": "8d76deffe962028be27df7ca7096aea6de341805f76c80e132b6b2d648c69b98",
+    "compat.js": "670d9c44efcb67bda2c9f026f693038dea4b0aba3d2151a3b0a7cb337d650457",
+    "content.js": "df9f763dedbe04fcbc3814fdbdfd5f44eb520d1acf1728f11a0ab4ab159b6dac",
+    "background.js": "7b7e95897d74fa5aad29bcbe53246cc946d9a24d4369f5e3120d4da92f433f4c",
+    "manifest.json": "d10c0ebaa23feaa64d5e1bf11ae1ffb41d6a3c28cab3a78fb1c963f939dce48c",
+    "options.js": "7e24ae25a6ac61b6ce7c7fbc08c56ad319a5fe27f8a24ed691cd3050300b9e10",
+    "options.html": "fd71ffab1ee436fa8d82df4a0d4bad5300d03795d800f78881deec8175cc532d",
+    "options.css": "6719cc00e699ee7448f001374022681655a919113e93b7674710780d9bb6f165"
+  }
+}

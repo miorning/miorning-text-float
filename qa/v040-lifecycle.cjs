@@ -4,7 +4,7 @@ const fs = require('node:fs'), path = require('node:path'), assert = require('no
 const {chromium} = require('playwright');
 const runtime = require('./runtime.cjs');
 const extension = path.resolve(__dirname, '../extension');
-const scripts = ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js'];
+const scripts = ['control.js', 'store.js', 'shell.js', 'references.js', 'menus.js', 'dock.js', 'editing.js', 'compat.js'];
 const tests = [], pageErrors = [];
 let browser, context, page;
 const fixture = '<!doctype html><html><head><meta charset="utf-8"><title>Isolated lifecycle fixture</title></head><body><textarea id="prompt" style="width:320px;height:100px"></textarea><textarea id="second"></textarea></body></html>';

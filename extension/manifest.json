@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "喵咛文本窗 · MIORNING",
-  "version": "0.4.1",
+  "version": "0.4.4",
   "description": "全网页浮动文本窗：拖动缩放、版本与图片引用；贴边图标设置，全局 Alt+K 开关。Enter 换行，Esc 确认。",
   "minimum_chrome_version": "120",
   "permissions": [
@@ -35,6 +35,8 @@
         "references.js",
         "menus.js",
         "dock.js",
+        "editing.js",
+        "compat.js",
         "content.js"
       ],
       "run_at": "document_idle"
